@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Secure Cash Book - Faizan Computer Center</title>
+    <style>
+        :root {
+            --primary-color: #1e3799;
+            --success-color: #27ae60;
+            --danger-color: #ff0000; /* Dark Red */
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --dropdown-blue: #1e3799;
+            --dark-green: #27ae60; /* Dark Green */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #eef2f3;
+            color: var(--dark-text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        /* LOGIN SCREEN STYLES */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3799, #2c3e50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: var(--dropdown-blue);
+            margin-bottom: 15px;
+            border-bottom: none;
+            font-size: 22px;
+        }
+
+        .login-field {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--dropdown-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #0c2461;
+        }
+
+        .error-msg {
+            color: #c0392b;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: none;
+        }
+
+        /* MAIN APP STYLES - FULL SCREEN RESPONSIVE FIT */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            height: 98vh;
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 3px;
+            flex-shrink: 0;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .btn-lock-toggle {
+            background: #d63031;
+            color: white;
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: auto;
+            margin-right: 8px;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+        .btn-lock-toggle.unlocked {
+            background: #27ae60;
+        }
+
+        .btn-print {
+            background: #2980b9;
+            color: white;
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        .btn-print:hover { background: #1f6391; }
+
+        .btn-logout {
+            background: #7f8c8d;
+            color: white;
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-logout:hover { background: #5d6d7e; }
+
+        /* COMPACT MARQUEE */
+        .marquee-wrapper {
+            background: linear-gradient(90deg, #1e3799, #2c3e50);
+            color: #fff;
+            padding: 4px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #00d2d3;
+            border-right: 4px solid #00d2d3;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .marquee-wrapper marquee {
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* COMPACT DASHBOARD */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: var(--light-bg);
+            padding: 4px 6px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .card.opening-ac { border-left-color: var(--dropdown-blue); color: var(--dropdown-blue); }
+        .card.opening-hand { border-left-color: #e67e22; color: #e67e22; }
+        .card.credit { border-left-color: var(--success-color); color: var(--success-color); }
+        .card.debit { border-left-color: var(--danger-color); color: var(--danger-color); }
+        .card.closing { border-left-color: var(--dark-green); color: var(--dark-green); }
+
+        .card h3 {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-bottom: 1px;
+            font-weight: bold;
+        }
+
+        .card p {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* VERY COMPACT INPUT SECTIONS */
+        .form-section, .search-section {
+            background: var(--light-bg);
+            padding: 6px 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .form-section h3, .search-section h3 {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        /* LIVE SEARCH FILTER DISPLAY BOXES STYLES */
+        .filter-result-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+            margin-bottom: 2px;
+        }
+
+        .filter-mini-box {
+            flex: 1;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.05);
+            height: 28px;
+            overflow: hidden;
+        }
+        
+        .filter-left-part {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .filter-right-part {
+            font-style: italic;
+            font-size: 12px;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 8px;
+        }
+
+        .filter-mini-box.cr {
+            background-color: white;
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+        .filter-mini-box.dr {
+            background-color: white;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        label {
+            font-size: 10px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 1px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            font-size: 11px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--dropdown-blue);
+            box-shadow: 0 0 4px rgba(30, 55, 153, 0.3);
+        }
+
+        select option {
+            background-color: var(--dropdown-blue);
+            color: #ffffff;
+            font-weight: bold;
+            padding: 4px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            transition: all 0.3s;
+        }
+
+        .btn-save { background: var(--success-color); color: white; }
+        .btn-reset { background: #7f8c8d; color: white; }
+        .btn-clear-search { background: #e67e22; color: white; }
+        .btn-danger-all { background: #d63031; color: white; margin-left: auto; display: none; }
+        
+        .action-buttons-wrapper {
+            display: none;
+            gap: 4px;
+        }
+        
+        .btn-edit { background: #2980b9; color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; border:none; cursor:pointer; font-weight: bold;}
+        .btn-delete { background: var(--danger-color); color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; border:none; cursor:pointer; font-weight: bold;}
+
+        /* HIGHER SPECIFICITY TABLE FOR EXTRA VIEW */
+        .table-container {
+            overflow-y: auto;
+            overflow-x: auto;
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        th, td {
+            padding: 5px 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 11px;
+        }
+
+        /* Screen Alignment Setup */
+        .col-center { text-align: center !important; }
+        .col-right { text-align: right !important; }
+
+        tr:hover { background-color: #f1f2f6; }
+
+        .text-opening { color: var(--dropdown-blue); font-weight: bold; }
+        .text-credit { color: var(--success-color); font-weight: bold; }
+        .text-debit { color: var(--danger-color); font-weight: bold; }
+        .text-balance { color: var(--dark-green); font-weight: bold; }
+        
+        .no-data {
+            text-align: center;
+            padding: 15px;
+            color: #7f8c8d;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        /* LANDSCAPE PRINT CSS CODE WITH ALIGNMENTS */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+            body, .container {
+                background: #fff !important;
+                color: #000 !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                display: block !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .login-overlay, 
+            .marquee-wrapper, 
+            .form-section, 
+            .search-section, 
+            .btn-print, 
+            .btn-logout,
+            .btn-lock-toggle,
+            th:last-child, 
+            td:last-child { 
+                display: none !important; 
+            }
+            .header-area {
+                border-bottom: 2px solid #000 !important;
+                margin-bottom: 15px !important;
+            }
+            .dashboard {
+                grid-template-columns: repeat(5, 1fr) !important;
+                margin-bottom: 20px !important;
+                gap: 5px !important;
+            }
+            .card {
+                border: 1px solid #000 !important;
+                background: #fff !important;
+                padding: 5px !important;
+            }
+            .table-container {
+                overflow: visible !important;
+                border: none !important;
+            }
+            table {
+                width: 100% !important;
+                border: 1px solid #000 !important;
+            }
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 6px 8px !important;
+                font-size: 11px !important;
+                text-align: left; 
+            }
+            th {
+                background-color: #f2f2f2 !important;
+                color: #000 !important;
+            }
+            .col-center { text-align: center !important; }
+            .col-right { text-align: right !important; }
+            .text-credit { color: #27ae60 !important; font-weight: bold; }
+            .text-debit { color: #ff0000 !important; font-weight: bold; }
+            .text-balance { color: #27ae60 !important; font-weight: bold; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-overlay" id="loginScreen">
+    <div class="login-box">
+        <h2>🔒 Personal Cash Book Lock</h2>
+        <div class="error-msg" id="loginError">Galat ID ya Password! Kripya sahi bharein.</div>
+        
+        <div class="login-field">
+            <label>User ID</label>
+            <input type="password" id="loginUser" placeholder="User ID darj karein...">
+        </div>
+        <div class="login-field">
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="Password darj karein...">
+        </div>
+        <button class="login-btn" onclick="checkLogin()">Login Karein</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header-area">
+        <h2>🔒 Personal Ledger Cash Book</h2>
+        <button class="btn-lock-toggle" id="lockToggleBtn" onclick="toggleActionSecurity()">🔒 Unlock Actions</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Landscape Print</button>
+        <button class="btn-logout" onclick="logout()">Logout / Lock</button>
+    </div>
+
+    <div class="marquee-wrapper">
+        <marquee behavior="scroll" direction="left" scrollamount="8" style="animation-duration: 10s;">
+            🚀 Welcome to Faizan Computer Center Cash Management System 🌟 Keep Your Private Ledger Secure 🔒 Always remember to logout after entries! 🚀
+        </marquee>
+    </div>
+
+    <div class="dashboard">
+        <div class="card opening-ac">
+            <h3>A/C Bal (Bank)</h3>
+            <p id="dash-opening-ac">₹0.00</p>
+        </div>
+        <div class="card opening-hand">
+            <h3>In Hand Bal (Nagad)</h3>
+            <p id="dash-opening-hand">₹0.00</p>
+        </div>
+        <div class="card credit">
+            <h3>Total Credit (+)</h3>
+            <p id="dash-credit">₹0.00</p>
+        </div>
+        <div class="card debit">
+            <h3>Total Debit (-)</h3>
+            <p id="dash-debit">₹0.00</p>
+        </div>
+        <div class="card closing">
+            <h3>Net Total Balance</h3>
+            <p id="dash-closing">₹0.00</p>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h3 id="form-title">New Entry / Update Hear</h3>
+        <input type="hidden" id="entry-index" value="">
+        <div class="grid-inputs">
+            <div>
+                <label>S.No</label>
+                <input type="text" id="s-no" readonly placeholder="Auto">
+            </div>
+            <div>
+                <label>Date</label>
+                <input type="date" id="tx-date" required>
+            </div>
+            <div id="opening-bal-container">
+                <label>A/C Opening Bal (₹)</label>
+                <input type="number" id="opening-bal" placeholder="A/C amount..." value="0">
+            </div>
+            <div id="hand-bal-container">
+                <label>In Hand Bal (₹)</label>
+                <input type="number" id="hand-bal" placeholder="In hand amount..." value="0">
+            </div>
+            <div>
+                <label>Naam / Description</label>
+                <input type="text" id="tx-name" placeholder="Naam likhein" value="Input Name" required>
+            </div>
+            <div>
+                <label>Transaction Type</label>
+                <select id="tx-type">
+                    <option value="Credit">Credit /Debit </option>
+                    <option value="Debit">Debit (Kharch / -)</option>
+                </select>
+            </div>
+            <div>
+                <label>Payment Mode</label>
+                <select id="pay-mode">
+                    <option value="Nagad (Cash)">Nagad (Cash)</option>
+                    <option value="UPI / Online">UPI / Online</option>
+                </select>
+            </div>
+            <div>
+                <label>Amount (₹)</label>
+                <input type="number" id="tx-amount" placeholder="0" value="0" required>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-save" onclick="saveEntry()" id="btn-submit">Save Entry</button>
+            <button class="btn btn-reset" onclick="resetForm()">Reset / Cancel</button>
+            <button class="btn btn-danger-all" id="masterResetBtn" onclick="clearAllDataMaster()">Clear All Data (Reset Cash Book)</button>
+        </div>
+    </div>
+
+    <div class="search-section">
+        <h3>Advanced Search & Filters (Live Working)</h3>
+        <div class="grid-inputs">
+            <div>
+                <label>Naam Se Search</label>
+                <input type="text" id="search-name" placeholder="Type name to search..." oninput="filterAndRender()">
+            </div>
+            <div>
+                <label>Specific Date Search</label>
+                <input type="date" id="search-date" onchange="filterAndRender()">
+            </div>
+            <div>
+                <label>Monthly Search</label>
+                <input type="month" id="search-month" onchange="filterAndRender()">
+            </div>
+            <div>
+                <label>Yearly Search (YYYY)</label>
+                <input type="number" id="search-year" placeholder="Eg. 2026" oninput="filterAndRender()">
+            </div>
+        </div>
+        
+        <div class="filter-result-row">
+            <div class="filter-mini-box cr">
+                <div class="filter-left-part">
+                    <span>Search Filter Total Credit (+):</span>
+                    <span id="filter-total-credit">₹0.00</span>
+                </div>
+                <div class="filter-right-part" id="filter-total-credit-words"></div>
+            </div>
+            <div class="filter-mini-box dr">
+                <div class="filter-left-part">
+                    <span>Search Filter Total Debit (-):</span>
+                    <span id="filter-total-debit">₹0.00</span>
+                </div>
+                <div class="filter-right-part" id="filter-total-debit-words"></div>
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 4px;">
+            <button class="btn btn-clear-search" onclick="clearFilters()">Clear Filters / Show All</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-center">S.No</th>
+                    <th class="col-center">Date</th>
+                    <th>Name / Details</th>
+                    <th>Type</th>
+                    <th>Mode</th>
+                    <th class="col-right">Credit (+)</th>
+                    <th class="col-right">Debit (-)</th>
+                    <th class="col-right">A/C Balance</th>
+                    <th class="col-right">In Hand Balance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="ledger-entries">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let isActionsUnlocked = false; 
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            document.getElementById('loginScreen').style.display = 'none';
+            initApp();
+        }
+    });
+
+    function checkLogin() {
+        const user = document.getElementById('loginUser').value.trim();
+        const pass = document.getElementById('loginPass').value.trim();
+        const errorMsg = document.getElementById('loginError');
+
+        if (user === "daroga" && pass === "4644") {
+            sessionStorage.setItem('isLoggedIn', 'true'); 
+            document.getElementById('loginScreen').style.display = 'none';
+            errorMsg.style.display = 'none';
+            document.getElementById('loginUser').value = "";
+            document.getElementById('loginPass').value = "";
+            initApp();
+        } else {
+            errorMsg.style.display = 'block';
+        }
+    }
+
+    // Date Format (YYYY-MM-DD to DD/MM/YYYY) convert karne ke liye function
+    function formatDateToDDMMYYYY(dateString) {
+        if (!dateString) return "";
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return dateString;
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    function toggleActionSecurity() {
+        const lockBtn = document.getElementById('lockToggleBtn');
+        const masterResetBtn = document.getElementById('masterResetBtn');
+
+        if (!isActionsUnlocked) {
+            const securityPass = prompt("बटन एक्टिवेट करने के लिए सिक्योरिटी पासवर्ड दर्ज करें:");
+            if (securityPass === "4644") {
+                isActionsUnlocked = true;
+                lockBtn.innerText = "🔓 Lock Actions";
+                lockBtn.classList.add('unlocked');
+                masterResetBtn.style.display = "block"; 
+                alert("एक्शन बटन सक्रिय हो गए हैं! अब आप एडिट या डिलीट कर सकते हैं।");
+            } else if (securityPass !== null) {
+                alert("गलत पासवर्ड! एक्सेस नामंजूर।");
+            }
+        } else {
+            isActionsUnlocked = false;
+            lockBtn.innerText = "🔒 Unlock Actions";
+            lockBtn.classList.remove('unlocked');
+            masterResetBtn.style.display = "none";
+            resetForm();
+        }
+        filterAndRender(); 
+    }
+
+    function logout() {
+        sessionStorage.removeItem('isLoggedIn'); 
+        isActionsUnlocked = false; 
+        document.getElementById('lockToggleBtn').innerText = "🔒 Unlock Actions";
+        document.getElementById('lockToggleBtn').classList.remove('unlocked');
+        document.getElementById('masterResetBtn').style.display = "none";
+        document.getElementById('loginScreen').style.display = 'flex';
+        const tbody = document.getElementById('ledger-entries');
+        tbody.innerHTML = ""; 
+    }
+
+    let cashBookData = [];
+    let initialOpeningBalance = 0;
+    let initialHandBalance = 0;
+    let currentGlobalClosingBalance = 0;
+    let currentGlobalHandBalance = 0;
+
+    function initApp() {
+        cashBookData = JSON.parse(localStorage.getItem('cashBookData')) || [];
+        initialOpeningBalance = parseFloat(localStorage.getItem('initialOpeningBalance')) || 0;
+        initialHandBalance = parseFloat(localStorage.getItem('initialHandBalance')) || 0;
+        
+        filterAndRender();
+    }
+
+    function resetForm() {
+        document.getElementById('entry-index').value = "";
+        document.getElementById('s-no').value = "";
+        document.getElementById('tx-date').valueAsDate = new Date();
+        document.getElementById('tx-name').value = "Opening Balance";
+        document.getElementById('tx-type').value = "Credit";
+        document.getElementById('pay-mode').value = "Nagad (Cash)";
+        document.getElementById('tx-amount').value = "0";
+        
+        document.getElementById('form-title').innerText = "Nayi Entry / Update Karein";
+        const submitBtn = document.getElementById('btn-submit');
+        submitBtn.innerText = "Save Entry";
+        submitBtn.style.backgroundColor = "var(--success-color)";
+        
+        updateFormOpeningBalanceField();
+    }
+
+    function clearFilters() {
+        document.getElementById('search-name').value = "";
+        document.getElementById('search-date').value = "";
+        document.getElementById('search-month').value = "";
+        document.getElementById('search-year').value = "";
+        filterAndRender();
+    }
+
+    function numberToWords(num) {
+        if (num === 0) return "Zero Only";
+        let rs = Math.floor(num);
+        let paise = Math.round((num - rs) * 100);
+
+        const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+        const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+        function convertLessThanOneThousand(n) {
+            if (n === 0) return '';
+            let str = '';
+            if (n >= 100) { str += a[Math.floor(n / 100)] + 'Hundred '; n %= 100; }
+            if (n >= 20) { str += b[Math.floor(n / 10)] + ' '; n %= 10; }
+            if (n > 0) { str += a[n]; }
+            return str;
+        }
+
+        function convert(n) {
+            let str = '';
+            if (Math.floor(n / 10000000) > 0) { str += convertLessThanOneThousand(Math.floor(n / 10000000)) + 'Crore '; n %= 10000000; }
+            if (Math.floor(n / 100000) > 0) { str += convertLessThanOneThousand(Math.floor(n / 100000)) + 'Lakh '; n %= 100000; }
+            if (Math.floor(n / 1000) > 0) { str += convertLessThanOneThousand(Math.floor(n / 1000)) + 'Thousand '; n %= 1000; }
+            str += convertLessThanOneThousand(n);
+            return str;
+        }
+
+        let result = convert(rs) + "Rupees ";
+        if (paise > 0) { result += "and " + convertLessThanOneThousand(paise) + "Paise "; }
+        return result.trim() + " Only";
+    }
+
+    function updateFormOpeningBalanceField() {
+        const inputField = document.getElementById('opening-bal');
+        const handField = document.getElementById('hand-bal');
+        const container = document.getElementById('opening-bal-container');
+        const handContainer = document.getElementById('hand-bal-container');
+        
+        if (cashBookData.length > 0) {
+            inputField.value = currentGlobalClosingBalance.toFixed(2);
+            inputField.readOnly = true;
+            container.style.opacity = "0.75";
+            
+            handField.value = currentGlobalHandBalance.toFixed(2);
+            handField.readOnly = true;
+            handContainer.style.opacity = "0.75";
+        } else {
+            inputField.value = initialOpeningBalance;
+            inputField.readOnly = false;
+            container.style.opacity = "1";
+            
+            handField.value = initialHandBalance;
+            handField.readOnly = false;
+            handContainer.style.opacity = "1";
+        }
+    }
+
+    function saveEntry() {
+        const indexStr = document.getElementById('entry-index').value;
+        const date = document.getElementById('tx-date').value;
+        const name = document.getElementById('tx-name').value.trim();
+        const type = document.getElementById('tx-type').value;
+        const mode = document.getElementById('pay-mode').value;
+        const amount = parseFloat(document.getElementById('tx-amount').value) || 0;
+
+        if (!date || !name || amount < 0) {
+            alert("Kripya Date aur Name sahi se bharein!");
+            return;
+        }
+
+        if (indexStr !== "" && !isActionsUnlocked) {
+            alert("सुरक्षा चेतावनी: एक्शन लॉक है! आप एंट्री अपडेट नहीं कर सकते।");
+            resetForm();
+            return;
+        }
+
+        if (cashBookData.length === 0 || indexStr === "0") {
+            initialOpeningBalance = parseFloat(document.getElementById('opening-bal').value) || 0;
+            initialHandBalance = parseFloat(document.getElementById('hand-bal').value) || 0;
+            localStorage.setItem('initialOpeningBalance', initialOpeningBalance);
+            localStorage.setItem('initialHandBalance', initialHandBalance);
+        }
+
+        const entry = { date, name, type, mode, amount };
+
+        if (indexStr === "") {
+            cashBookData.push(entry);
+        } else {
+            const idx = parseInt(indexStr);
+            cashBookData[idx] = entry;
+        }
+
+        cashBookData.sort((a, b) => new Date(a.date) - new Date(b.date));
+        localStorage.setItem('cashBookData', JSON.stringify(cashBookData));
+        resetForm();
+        filterAndRender();
+    }
+
+    function editEntry(originalIndex) {
+        if (!isActionsUnlocked) return;
+        const entry = cashBookData[originalIndex];
+        document.getElementById('entry-index').value = originalIndex;
+        document.getElementById('s-no').value = originalIndex + 1;
+        document.getElementById('tx-date').value = entry.date;
+        document.getElementById('tx-name').value = entry.name;
+        document.getElementById('tx-type').value = entry.type;
+        document.getElementById('pay-mode').value = entry.mode;
+        document.getElementById('tx-amount').value = entry.amount;
+
+        document.getElementById('form-title').innerText = `Update Entry #${originalIndex + 1}`;
+        const submitBtn = document.getElementById('btn-submit');
+        submitBtn.innerText = "Update Entry";
+        submitBtn.style.backgroundColor = "#2980b9";
+        
+        if (originalIndex === 0) {
+            document.getElementById('opening-bal').value = initialOpeningBalance;
+            document.getElementById('opening-bal').readOnly = false;
+            document.getElementById('opening-bal-container').style.opacity = "1";
+            
+            document.getElementById('hand-bal').value = initialHandBalance;
+            document.getElementById('hand-bal').readOnly = false;
+            document.getElementById('hand-bal-container').style.opacity = "1";
+        }
+    }
+
+    function deleteEntry(originalIndex) {
+        if (!isActionsUnlocked) return;
+        if (confirm(`Kya aap sach me entry #${originalIndex + 1} delete karna chahte hain?`)) {
+            cashBookData.splice(originalIndex, 1);
+            if (cashBookData.length === 0) {
+                initialOpeningBalance = 0;
+                initialHandBalance = 0;
+                localStorage.setItem('initialOpeningBalance', 0);
+                localStorage.setItem('initialHandBalance', 0);
+            }
+            localStorage.setItem('cashBookData', JSON.stringify(cashBookData));
+            resetForm();
+            filterAndRender();
+        }
+    }
+
+    function clearAllDataMaster() {
+        if (!isActionsUnlocked) return;
+        if (confirm("🚨 गंभीर चेतावनी: क्या आप वाकई पूरा कैश बुक डेटा डिलीट करना चाहते हैं? यह वापस नहीं आएगा!")) {
+            localStorage.removeItem('cashBookData');
+            localStorage.removeItem('initialOpeningBalance');
+            localStorage.removeItem('initialHandBalance');
+            cashBookData = [];
+            initialOpeningBalance = 0;
+            initialHandBalance = 0;
+            currentGlobalClosingBalance = 0;
+            currentGlobalHandBalance = 0;
+            resetForm();
+            filterAndRender();
+            alert("Cash book poori tarah clear ho gayi hai.");
+        }
+    }
+
+    function filterAndRender() {
+        let currentACBalance = initialOpeningBalance;
+        let currentHandBalance = initialHandBalance;
+        
+        let masterTotalCredit = 0;
+        let masterTotalDebit = 0;
+
+        let processedData = cashBookData.map((entry, index) => {
+            let cr = entry.type === 'Credit' ? entry.amount : 0;
+            let dr = entry.type === 'Debit' ? entry.amount : 0;
+            
+            masterTotalCredit += cr;
+            masterTotalDebit += dr;
+            
+            if (entry.mode === "UPI / Online") {
+                currentACBalance = currentACBalance + cr - dr;
+            } else {
+                currentHandBalance = currentHandBalance + cr - dr;
+            }
+
+            return { 
+                ...entry, 
+                originalIndex: index,
+                acBalAfter: currentACBalance,
+                handBalAfter: currentHandBalance
+            };
+        });
+
+        currentGlobalClosingBalance = currentACBalance;
+        currentGlobalHandBalance = currentHandBalance;
+
+        // Update top master dashboard 
+        document.getElementById('dash-opening-ac').innerText = "₹" + initialOpeningBalance.toFixed(2);
+        document.getElementById('dash-opening-hand').innerText = "₹" + initialHandBalance.toFixed(2);
+        document.getElementById('dash-credit').innerText = "₹" + masterTotalCredit.toFixed(2);
+        document.getElementById('dash-debit').innerText = "₹" + masterTotalDebit.toFixed(2);
+        document.getElementById('dash-closing').innerText = "₹" + (currentACBalance + currentHandBalance).toFixed(2);
+
+        updateFormOpeningBalanceField();
+
+        // Apply filters
+        const sName = document.getElementById('search-name').value.toLowerCase().trim();
+        const sDate = document.getElementById('search-date').value;
+        const sMonth = document.getElementById('search-month').value;
+        const sYear = document.getElementById('search-year').value.trim();
+
+        let filteredData = processedData.filter(entry => {
+            if (sName && !entry.name.toLowerCase().includes(sName)) return false;
+            if (sDate && entry.date !== sDate) return false;
+            if (sMonth && !entry.date.startsWith(sMonth)) return false;
+            if (sYear && new Date(entry.date).getFullYear().toString() !== sYear) return false;
+            return true;
+        });
+
+        // Calculations for filtered statistics
+        let filterCredit = 0;
+        let filterDebit = 0;
+        filteredData.forEach(e => {
+            if (e.type === 'Credit') filterCredit += e.amount;
+            if (e.type === 'Debit') filterDebit += e.amount;
+        });
+
+        document.getElementById('filter-total-credit').innerText = "₹" + filterCredit.toFixed(2);
+        document.getElementById('filter-total-credit-words').innerText = numberToWords(filterCredit);
+        document.getElementById('filter-total-debit').innerText = "₹" + filterDebit.toFixed(2);
+        document.getElementById('filter-total-debit-words').innerText = numberToWords(filterDebit);
+
+        // Render rows inside table
+        const tbody = document.getElementById('ledger-entries');
+        tbody.innerHTML = "";
+
+        if (filteredData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" class="no-data">Khas filter ke anusar koi record nahi mila!</td></tr>`;
+            return;
+        }
+
+        filteredData.forEach((entry) => {
+            const tr = document.createElement('tr');
+            
+            let crText = entry.type === 'Credit' ? "₹" + entry.amount.toFixed(2) : "-";
+            let drText = entry.type === 'Debit' ? "₹" + entry.amount.toFixed(2) : "-";
+            let typeClass = entry.type === 'Credit' ? "text-credit" : "text-debit";
+            
+            // Format to DD/MM/YYYY
+            let displayedDate = formatDateToDDMMYYYY(entry.date);
+
+            tr.innerHTML = `
+                <td class="col-center" style="font-weight:bold;">${entry.originalIndex + 1}</td>
+                <td class="col-center" style="white-space:nowrap;">${displayedDate}</td>
+                <td style="font-weight:600; color:#2c3e50;">${entry.name}</td>
+                <td class="${typeClass}">${entry.type}</td>
+                <td style="font-weight:bold; color:#7f8c8d;">${entry.mode}</td>
+                <td class="col-right text-credit">${crText}</td>
+                <td class="col-right text-debit">${drText}</td>
+                <td class="col-right text-balance">₹${entry.acBalAfter.toFixed(2)}</td>
+                <td class="col-right" style="color:#e67e22; font-weight:bold;">₹${entry.handBalAfter.toFixed(2)}</td>
+                <td>
+                    <div class="action-buttons-wrapper" style="display: ${isActionsUnlocked ? 'flex' : 'none'};">
+                        <button class="btn-edit" onclick="editEntry(${entry.originalIndex})">📝 Edit</button>
+                        <button class="btn-delete" onclick="deleteEntry(${entry.originalIndex})">🗑️ Del</button>
+                    </div>
+                    <span class="lock-status-indicator" style="display: ${isActionsUnlocked ? 'none' : 'inline'}; font-size:11px; color:#95a5a6; font-style:italic;">🔒 Locked</span>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+</script>
+</body>
+</html>

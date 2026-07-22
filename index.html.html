@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Indian Technical Institute</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
+        
+        /* Background Gradient */
+        body { 
+            background-color: #0b1d3a; 
+            background-image: linear-gradient(135deg, #87CEEB 0%, #1a365d 100%); 
+            background-attachment: fixed; 
+        }
+        
+        /* लोगो स्टाइल */
+        .logo-container { position: absolute; top: 10px; left: 15px; z-index: 100; }
+        .logo-container img { 
+            height: 90px; 
+            width: 90px; 
+            display: block; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.7)); 
+        }
+
+        /* नेविगेशन बार */
+        nav { padding: 15px; text-align: right; }
+        nav a { color: white; text-decoration: none; margin: 0 15px; font-size: 14px; font-weight: bold; padding: 5px; text-shadow: 2px 2px 4px #000; cursor: pointer; }
+        nav a:hover { color: #f0f0f0; text-decoration: underline; }
+
+        /* कंटेनर और सेक्शन्स */
+        .container { padding-top: 20px; padding-left: 15px; color: white; text-shadow: 2px 2px 4px #000; margin-top: 40px; padding-right: 15px; }
+        .login-text { font-size: 13px; }
+        #mainContent, #mainIndexSection, #coursesSection, #gallerySection { display: none; } 
+
+        /* लॉगिन मॉडल */
+        #loginModal { 
+            display: none; position: fixed; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); background: rgba(0,0,0,0.85); 
+            padding: 25px; border-radius: 15px; color: white; text-align: center;
+            z-index: 200;
+        }
+        #loginModal input { padding: 8px; margin: 5px; border-radius: 5px; border: none; }
+        
+        /* होम पेज के इंफो सेक्शन्स */
+        .info-section { background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 5px solid #ffcc00; }
+        .info-section h3 { color: #ffcc00; margin-top: 0; }
+
+        /* Home Page Course Image Styling */
+        .section-img {
+            width: 100%;
+            max-height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #ffcc00;
+        }
+
+        /* सॉफ्टवेयर और लिंक्स ग्रिड */
+        .section-title { color: #ffcc00; margin-top: 30px; border-bottom: 2px solid #ffcc00; padding-bottom: 5px; }
+        .software-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+        .software-card { background: rgba(25, 25, 25, 0.85); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ffcc00; transition: transform 0.2s; }
+        .software-card:hover { transform: scale(1.05); background: rgba(50, 50, 50, 0.9); }
+        .software-card h4 { color: #ffcc00; margin: 0 0 10px 0; }
+        .software-card p { font-size: 13px; margin: 0 0 15px 0; color: #ddd; }
+        .software-btn { background: #ffcc00; color: black; border: none; padding: 8px 15px; font-weight: bold; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .software-btn:hover { background: white; }
+
+        /* गैलरी ग्रिड स्टाइल */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .gallery-card { background: rgba(25, 25, 25, 0.85); padding: 10px; border-radius: 8px; border: 1px solid #ffcc00; text-align: center; transition: transform 0.2s; cursor: pointer; }
+        .gallery-card:hover { transform: scale(1.03); background: rgba(50, 50, 50, 0.9); }
+        .gallery-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 5px; }
+        .gallery-card p { color: #ffcc00; margin: 10px 0 0 0; font-weight: bold; }
+
+        /* लाइटबॉक्स CSS */
+        .lightbox {
+            display: none; position: fixed; z-index: 300; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); text-align: center;
+        }
+        .lightbox-content {
+            max-width: 80%; max-height: 80%; margin: 5% auto; display: block;
+            border: 3px solid #ffcc00; border-radius: 8px;
+            animation: zoomIn 0.3s ease;
+        }
+        .lightbox-close {
+            position: absolute; top: 20px; right: 35px; color: #ffcc00;
+            font-size: 40px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .lightbox-close:hover { color: white; }
+        #lightboxCaption { color: #ffcc00; font-size: 20px; font-weight: bold; text-shadow: 2px 2px 4px #000; }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body onload="checkSession()">
+
+<!-- कॉलेज लोगो -->
+<div class="logo-container">
+    <img src="https://i.imgur.com/7ZtDCzy.jpeg" alt="Indian Technical Institute Logo">
+</div>
+
+<!-- ऊपर का मेनू (Navigation) -->
+<nav>
+    <a onclick="showHome()">Home</a>
+    <a onclick="showMainIndex()">Main Index</a>
+    <a onclick="showComputerCourses()">Computer Courses</a>
+    <a onclick="showGallery()">Gallery</a>
+    <a onclick="toggleLogin()">Login</a>
+    <a onclick="closeWebsite()">Logout</a>
+</nav>
+
+<!-- लॉगिन पॉप-अप -->
+<div id="loginModal">
+    <h3>Login</h3>
+    <input type="text" id="user" placeholder="Username"><br>
+    <input type="password" id="pass" placeholder="Password"><br><br>
+    <button onclick="checkLogin()">Submit</button>
+    <button onclick="document.getElementById('loginModal').style.display='none'">Cancel</button>
+</div>
+
+<!-- शुरुआती मैसेज (बिना लॉगिन के दिखेगा) -->
+<div id="statusMessage" class="container">
+    <h1>Welcome! Indian Technical Institute.</h1>
+    <h1 class="login-text">Login to access</h1>
+</div>
+
+<!-- 1. होम स्क्रीन सेक्शन (Images Included) -->
+<div id="mainContent" class="container">
+    <div id="homeSection">
+        <h1>Indian Technical Institute</h1>
+        <p>हमारा लक्ष्य छात्रों को तकनीकी रूप से सक्षम, कुशल और विभिन्न क्षेत्रों में आत्मनिर्भर बनाना है।</p>
+        
+        <!-- फायर सेफ्टी विभाग -->
+        <div class="info-section">
+            <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=1000&q=80" alt="Fire Safety Training" class="section-img">
+            <h3>🧯 फायर सेफ्टी (Fire & Safety Management)</h3>
+            <p>आधुनिक औद्योगिक क्षेत्रों में सुरक्षा सबसे महत्वपूर्ण पहलू है। हमारे यहाँ फायर सेफ्टी से जुड़े विशेष कोर्सेज कराए जाते हैं:</p>
+            <ul>
+                <li>अग्निशमन और आपातकालीन सुरक्षा प्रबन्धन (Fire Fighting & Emergency Management)</li>
+                <li>औद्योगिक सुरक्षा और जोखिम मूल्यांकन (Industrial Safety & Risk Assessment)</li>
+                <li>प्रैक्टिकल ट्रेनिंग और लाइव फायर ड्रिल (Hands-on Drill & Practical Safety Training)</li>
+                <li>सुरक्षा उपकरणों (Extinguishers, Hydrants) का सही संचालन और रखरखाव</li>
+            </ul>
+        </div>
+
+        <!-- कंप्यूटर शिक्षा विभाग -->
+        <div class="info-section">
+            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1000&q=80" alt="Computer Education Lab" class="section-img">
+            <h3>💻 कंप्यूटर शिक्षा (Advanced Computer Education)</h3>
+            <p>डिजिटल युग में कंप्यूटर ज्ञान होना अनिवार्य है। हम छात्रों को बुनियादी ज्ञान से लेकर एडवांस लेवल तक की ट्रेनिंग देते हैं:</p>
+            <ul>
+                <li>बेसिक कंप्यूटर और ऑफिस ऑटोमेशन (DCA, ADCA, MS Office)</li>
+                <li>अकाउंटिंग और वित्तीय प्रबंधन (Tally Prime, GST)</li>
+                <li>प्रोग्रामिंग लैंग्वेज और वेब डिजाइनिंग (HTML, CSS, Python)</li>
+                <li>आधुनिक कंप्यूटर लैब, इंटरनेट सुविधा और प्रोजेक्ट आधारित लर्निंग</li>
+            </ul>
+        </div>
+
+        <!-- इंग्लिश स्पोकन विभाग -->
+        <div class="info-section">
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1000&q=80" alt="English Spoken & Presentation" class="section-img">
+            <h3>🗣️ स्पोकन इंग्लिश (English Spoken & Communication)</h3>
+            <p>आज के वैश्विक युग में आत्मविश्वासी अंग्रेजी बोलना सफलता की कुंजी है। हमारे यहाँ छात्रों को अंग्रेजी बोलना और संवाद करना सिखाया जाता है:</p>
+            <ul>
+                <li>धाराप्रवाह अंग्रेजी बोलना (Fluent English Speaking & Pronunciation)</li>
+                <li>व्यक्तित्व विकास और बॉडी लैंग्वेज (Personality Development & Body Language)</li>
+                <li>ग्रुप डिस्कशन और इंटरव्यू की तैयारी (Group Discussions & Interview Preparation)</li>
+                <li>दैनिक जीवन में बातचीत का व्यावहारिक अभ्यास (Daily Conversation Practice)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- 2. मेन इंडेक्स सेक्शन (Main Index Button Click) -->
+<div id="mainIndexSection" class="container">
+    <h2 class="section-title">📌 Main Index & Social Media</h2>
+    <div class="software-grid">
+        <div class="software-card">
+            <h4>▶️ YouTube</h4>
+            <p>Video Tutorials & Online Classes.</p>
+            <a href="https://www.youtube.com" target="_blank" class="software-btn">Open YouTube</a>
+        </div>
+        <div class="software-card">
+            <h4>🌐 Facebook</h4>
+            <p>Social Media & Community Updates.</p>
+            <a href="https://www.facebook.com" target="_blank" class="software-btn">Open Facebook</a>
+        </div>
+        <div class="software-card">
+            <h4>📷 Instagram</h4>
+            <p>Visual Media & Institute Highlights.</p>
+            <a href="https://www.instagram.com" target="_blank" class="software-btn">Open Instagram</a>
+        </div>
+    </div>
+</div>
+
+<!-- 3. कंप्यूटर कोर्सेज और सॉफ्टवेयर लिस्ट सेक्शन -->
+<div id="coursesSection" class="container">
+    <h2 class="section-title">💻 Work & Practice Softwares</h2>
+    <div class="software-grid">
+        <div class="software-card">
+            <h4>📄 MS Word / Docs</h4>
+            <p>Typing, Resume, and Documentation work.</p>
+            <a href="https://docs.new" target="_blank" class="software-btn">Open Software</a>
+        </div>
+        <div class="software-card">
+            <h4>📊 MS Excel / Sheets</h4>
+            <p>Data Entry, Billing, and Formulas.</p>
+            <a href="https://sheets.new" target="_blank" class="software-btn">Open Software</a>
+        </div>
+        <div class="software-card">
+            <h4>🪙 Tally / Accounting</h4>
+            <p>Financial Accounting & GST Management.</p>
+            <a href="./cash_book.html" target="_blank" class="software-btn">Open Cash Book</a>
+        </div>
+        <div class="software-card">
+            <h4>📝 Form</h4>
+            <p>Student Form Entry & Details.</p>
+            <!-- Fixed: Path updated to ./form.html -->
+            <a href="./form.html" target="_blank" class="software-btn">Open Form</a>
+        </div>
+        <div class="software-card">
+            <h4>💻 VS Code (Coding)</h4>
+            <p>HTML, CSS & JavaScript Practice.</p>
+            <a href="https://vscode.dev" target="_blank" class="software-btn">Open Editor</a>
+        </div>
+        <div class="software-card">
+            <h4>💬 WhatsApp Web</h4>
+            <p>Chat, Project Sharing & Communication.</p>
+            <a href="https://web.whatsapp.com" target="_blank" class="software-btn">Open WhatsApp</a>
+        </div>
+        <div class="software-card">
+            <h4>📁 Google Drive</h4>
+            <p>Cloud Storage & File Backups.</p>
+            <a href="https://drive.google.com" target="_blank" class="software-btn">Open Drive</a>
+        </div>
+    </div>
+
+    <h2 class="section-title">🔗 Important Resources & Links</h2>
+    <div class="software-grid">
+        <div class="software-card">
+            <h4>💼 Sarkari Result</h4>
+            <p>Latest Govt Jobs, Admit Cards & Results.</p>
+            <a href="https://www.sarkariresult.com" target="_blank" class="software-btn">Visit Website</a>
+        </div>
+        <div class="software-card">
+            <h4>📍 Institute Location</h4>
+            <p>Find us on Google Maps Navigation.</p>
+            <a href="https://maps.google.com" target="_blank" class="software-btn">Open Maps</a>
+        </div>
+    </div>
+</div>
+
+<!-- 4. गैलरी सेक्शन -->
+<div id="gallerySection" class="container">
+    <h2 class="section-title">📷 Institute Gallery</h2>
+    <p>हमारे इंस्टिट्यूट की कुछ झलकियां (फोटो बड़ा देखने के लिए उस पर क्लिक करें):</p>
+    
+    <div class="gallery-grid">
+        <div class="gallery-card" onclick="zoomImage(this)">
+            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80" alt="Lab Image">
+            <p>कंप्यूटर लैब (Computer Lab)</p>
+        </div>
+        <div class="gallery-card" onclick="zoomImage(this)">
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=600&q=80" alt="Classroom Image">
+            <p>स्मार्ट क्लासरूम (Smart Classroom)</p>
+        </div>
+        <div class="gallery-card" onclick="zoomImage(this)">
+            <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=600&q=80" alt="Fire Safety Drill">
+            <p>फायर सेफ्टी ड्रिल (Live Drill)</p>
+        </div>
+    </div>
+</div>
+
+<!-- लाइटबॉक्स पॉप-अप -->
+<div id="imageLightbox" class="lightbox">
+    <span class="lightbox-close" onclick="closeZoom()">&times;</span>
+    <img class="lightbox-content" id="imgBig">
+    <div id="lightboxCaption"></div>
+</div>
+
+<!-- जावास्क्रिप्ट लॉजिक -->
+<script>
+    function checkSession() {
+        if (sessionStorage.getItem("isLoggedIn") === "true") {
+            showHome();
+        }
+    }
+
+    function toggleLogin() {
+        document.getElementById('loginModal').style.display = 'block';
+    }
+
+    function checkLogin() {
+        var user = document.getElementById('user').value;
+        var pass = document.getElementById('pass').value;
+
+        if (user === "admin" && pass === "1234") {
+            sessionStorage.setItem("isLoggedIn", "true");
+            document.getElementById('loginModal').style.display = 'none';
+            showHome();
+            alert("Login Successful!");
+        } else {
+            alert("Galat ID ya Password!");
+        }
+    }
+
+    function showHome() {
+        if (sessionStorage.getItem("isLoggedIn") === "true") {
+            document.getElementById("mainContent").style.display = "block";
+            document.getElementById("mainIndexSection").style.display = "none";
+            document.getElementById("coursesSection").style.display = "none";
+            document.getElementById("gallerySection").style.display = "none";
+            document.getElementById("statusMessage").style.display = "none";
+        } else {
+            alert("Access Denied! Pehle Login karein.");
+        }
+    }
+
+    function showMainIndex() {
+        if (sessionStorage.getItem("isLoggedIn") === "true") {
+            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("mainIndexSection").style.display = "block";
+            document.getElementById("coursesSection").style.display = "none";
+            document.getElementById("gallerySection").style.display = "none";
+            document.getElementById("statusMessage").style.display = "none";
+        } else {
+            alert("Access Denied! Pehle Login karein.");
+        }
+    }
+
+    function showComputerCourses() {
+        if (sessionStorage.getItem("isLoggedIn") === "true") {
+            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("mainIndexSection").style.display = "none";
+            document.getElementById("coursesSection").style.display = "block";
+            document.getElementById("gallerySection").style.display = "none";
+            document.getElementById("statusMessage").style.display = "none";
+        } else {
+            alert("Access Denied! Pehle Login karein.");
+        }
+    }
+
+    function showGallery() {
+        if (sessionStorage.getItem("isLoggedIn") === "true") {
+            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("mainIndexSection").style.display = "none";
+            document.getElementById("coursesSection").style.display = "none";
+            document.getElementById("gallerySection").style.display = "block";
+            document.getElementById("statusMessage").style.display = "none";
+        } else {
+            alert("Access Denied! Pehle Login karein.");
+        }
+    }
+
+    function zoomImage(element) {
+        var imgSrc = element.getElementsByTagName('img')[0].src;
+        var imgCaption = element.getElementsByTagName('p')[0].innerText;
+        
+        document.getElementById("imageLightbox").style.display = "block";
+        document.getElementById("imgBig").src = imgSrc;
+        document.getElementById("lightboxCaption").innerText = imgCaption;
+    }
+
+    function closeZoom() {
+        document.getElementById("imageLightbox").style.display = "none";
+    }
+
+    function closeWebsite() {
+        sessionStorage.clear();
+        alert("Aap Logout ho gaye hain.");
+        window.location.reload();
+    }
+</script>
+
+</body>
+</html>

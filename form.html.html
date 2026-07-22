@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Institute Billing System</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #0284c7;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: #e2e8f0; 
+            margin: 0; 
+            padding: 0; 
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* Fixed Marquee System */
+        .marquee-container {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 8px 0;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .marquee-container marquee {
+            display: block;
+            line-height: 1;
+        }
+
+        /* Login Panel */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            border-top: 5px solid var(--primary);
+        }
+        .login-box h2 { margin-top: 0; color: var(--primary); font-size: 22px; }
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        /* Main App Interface with Right Sidebar for QR */
+        .app-container {
+            max-width: 1200px;
+            margin: 15px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+        }
+
+        /* Slim Professional Header */
+        .app-header {
+            background: #0f172a;
+            color: white;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-header-text { text-align: left; }
+        .app-header h1 { margin: 0; font-size: 22px; letter-spacing: 0.5px; display: inline-block; }
+        .app-header p { margin: 2px 0 0 0; color: #94a3b8; font-size: 13px; display: inline-block; margin-left: 15px; }
+        .logout-btn {
+            background: var(--danger); color: white; border: none;
+            padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px;
+        }
+
+        /* Search Area */
+        .search-area {
+            background: #f1f5f9; 
+            padding: 10px 25px; 
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* Main Workspace Layout Split */
+        .main-workspace {
+            display: flex;
+            flex-direction: row;
+        }
+
+        /* Form Grid Area */
+        .form-section {
+            flex: 1;
+            border-right: 1px solid #e2e8f0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 20px 25px;
+        }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-weight: 600; margin-bottom: 6px; font-size: 13px; color: #475569; }
+        input, select {
+            padding: 9px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus {
+            outline: none; border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        .section-title {
+            grid-column: span 3;
+            font-size: 14px; font-weight: bold; color: var(--primary);
+            background: #f8fafc; padding: 6px 12px; margin: 4px 0;
+            border-left: 4px solid var(--primary); border-radius: 0 4px 4px 0;
+        }
+
+        /* Interactive QR Sidebar (Screen Only) */
+        .qr-sidebar {
+            width: 240px;
+            padding: 20px;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .qr-box {
+            background: white;
+            padding: 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 10px;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .qr-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Actions Button Section */
+        .action-area {
+            background: #f8fafc; padding: 15px;
+            text-align: center; border-top: 1px solid #e2e8f0;
+        }
+        .btn {
+            padding: 10px 26px; font-size: 14px; font-weight: bold;
+            border: none; border-radius: 6px; cursor: pointer; margin: 4px;
+            transition: background 0.2s;
+        }
+        .btn-search { background: var(--secondary); color: white; }
+        .btn-submit { background: var(--success); color: white; }
+        .btn-update { background: #d97706; color: white; display: none; }
+        .btn-wa { background: #25d366; color: white; }
+        .btn-clear { background: #64748b; color: white; }
+
+        /* Loader */
+        .loader {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 11000; justify-content: center; align-items: center;
+            color: white; font-size: 18px; font-weight: bold; flex-direction: column;
+        }
+        .spin {
+            width: 40px; height: 40px; border: 4px solid #fff; border-top: 4px solid var(--secondary);
+            border-radius: 50%; animation: run 1s linear infinite; margin-bottom: 12px;
+        }
+        @keyframes run { 100% { transform: rotate(360deg); } }
+
+        /* PRINT SETTINGS */
+        #printArea { display: none; }
+
+        @media print {
+            body { background: white; padding: 0; margin: 0; }
+            .marquee-container, .login-overlay, .app-container, .loader, .qr-sidebar { display: none !important; }
+            #printArea { 
+                display: block !important; 
+                width: 210mm; 
+                height: 297mm; 
+                box-sizing: border-box;
+                padding: 10mm;
+            }
+            .print-receipt {
+                height: auto; 
+                border: 2px dashed #475569;
+                padding: 20px;
+                box-sizing: border-box;
+                position: relative;
+            }
+            .receipt-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+            .receipt-header h2 { margin: 0; font-size: 24px; text-transform: uppercase; color: #000; }
+            
+            .print-main-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+            .print-table { width: 65%; border-collapse: collapse; font-size: 14px; }
+            .print-table td { padding: 6px; border-bottom: 1px dotted #666; }
+            .print-table td.title { font-weight: bold; width: 45%; }
+            
+            .print-qr-area {
+                width: 30%;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border: 1px dashed #cbd5e1;
+                padding: 10px;
+                border-radius: 6px;
+            }
+            .print-qr-area img { width: 110px; height: 110px; }
+            .print-qr-area p { margin: 5px 0 0 0; font-weight: bold; }
+            
+            .print-footer { margin-top: 25px; display: flex; justify-content: space-between; font-size: 14px; font-style: italic; width: 100%; }
+            .blank-space { height: 20mm; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- FIXED MARQUEE -->
+<div class="marquee-container" id="topMarquee">
+    <marquee behavior="scroll" direction="left" scrollamount="6">🔒 Secure Administrative Portal | ADCA, DCA, TALLY एडमिशन और फीस मैनेजमेंट सिस्टम में आपका स्वागत है।</marquee>
+</div>
+
+<!-- लॉगिन पैनल -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <h2>🔐 ADMIN LOGIN</h2>
+        <p style="color: #64748b; font-size: 12px; margin-bottom: 15px;">सुरक्षा के लिए क्रेडेंशियल दर्ज करें</p>
+        <input type="text" id="adminUser" placeholder="एडमिन आईडी (Admin ID)">
+        <input type="password" id="adminPass" placeholder="पासवर्ड (Password)">
+        <button class="btn btn-search" style="width:100%; margin: 10px 0 0 0;" onclick="checkLogin()">लॉगिन करें</button>
+        <p id="loginError" style="color: var(--danger); font-size: 12px; font-weight: bold; margin-top: 8px; display: none;">गलत आईडी या पासवर्ड!</p>
+    </div>
+</div>
+
+<!-- लोडिंग स्क्रीन -->
+<div class="loader" id="mainLoader">
+    <div class="spin"></div>
+    <div id="loaderText">प्रोसेसिंग हो रही है...</div>
+</div>
+
+<!-- मुख्य एप्लीकेशन इंटरफ़ेस -->
+<div class="app-container" id="appInterface">
+    <div class="app-header">
+        <div class="app-header-text">
+            <h1>INDIAN TECHNICAL INSTITUTE</h1>
+            <p>FEES MANAGEMENT Mobile No. 6393261758</p>
+        </div>
+        <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+
+    <!-- Search Panel -->
+    <div class="search-area">
+        <div style="display: flex; gap: 15px; align-items: center; max-width: 650px; margin: 0 auto;">
+            <label style="color: var(--primary); white-space: nowrap; margin-bottom: 0;"><strong>🔍 छात्र खोजें (Mobile):</strong></label>
+            <input type="tel" id="searchMobile" placeholder="Search Mobile Number">
+            <button type="button" class="btn btn-search" style="margin:0; padding: 7px 18px;" onclick="searchStudent()">खोजें</button>
+        </div>
+    </div>
+
+    <form id="billingForm" onsubmit="event.preventDefault(); submitData('submit');">
+        <div class="main-workspace">
+            <!-- Form Fields (Left Side) -->
+            <div class="form-section">
+                <div class="form-grid">
+                    
+                    <div class="section-title">1. छात्र एवं कोर्स विवरण (Student & Course)</div>
+                    
+                    <div class="form-group">
+                        <label>आईडी नंबर (ID No.):</label>
+                        <input type="text" name="idNo" id="idNo" placeholder="ऑटो जनरेटेड ID">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>छात्र का नाम (Student Name):</label>
+                        <input type="text" name="studentName" id="studentName" required placeholder="पूरा नाम भरें" oninput="convertToProperCase(this)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>मोबाइल नंबर (Mobile No.):</label>
+                        <input type="tel" name="mobile" id="mobile" pattern="[0-9]{10}" required placeholder="मोबाईल नम्बर ">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>कोर्स लिस्ट (Select Course):</label>
+                        <select name="course" id="course" required onchange="assignAutoFees(this.value)">
+                            <option value="">-- कोर्स चुनें --</option>
+                            <option value="INDUSTRIAL SAFETY">INDUSTRIAL SAFETY</option>
+                            <option value="ENGLISH SPOKEN">ENGLISH SPOKEN</option>
+                            <option value="ADCA">ADCA</option>
+                            <option value="DCA">DCA</option>
+                            <option value="TALLY">TALLY</option>
+                            <option value="CCC">CCC</option>
+                            <option value="O LEVEL">O LEVEL</option>
+                            <option value="OTHER">OTHER</option>
+                        </select>
+                    </div>
+
+                    <div class="section-title">2. FEES & PAYMENT SYSTEM</div>
+
+                    <div class="form-group">
+                        <label>कुल फीस (Total Fees):</label>
+                        <input type="number" name="totalFee" id="totalFee" required placeholder="0.00" oninput="calcBalance()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>कुल जमा फीस (Total Paid Amount):</label>
+                        <input type="number" name="paidFee" id="paidFee" required placeholder="0.00" oninput="calcBalance(); generateQR();">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>शेष फीस (Due Amount):</label>
+                        <input type="number" name="balanceFee" id="balanceFee" readonly style="background:#f1f5f9; font-weight:bold; color:var(--danger)">
+                    </div>
+
+                    <div class="form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 5px; border-radius: 6px;">
+                        <label style="color: var(--success); font-weight: bold;">इस बार जमा राशि (Current Installment):</label>
+                        <input type="number" id="currentInstallment" placeholder="0.00" style="border-color: var(--success);" oninput="calculateDynamicFees(); generateQR();">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>भुगतान मोड (Payment Mode):</label>
+                        <select name="paymentMode" id="paymentMode" required>
+                            <option value="">-- मोड चुनें --</option>
+                            <option value="GPay">GPay (गूगल पे)</option>
+                            <option value="PhonePe">PhonePe (फ़ोन पे)</option>
+                            <option value="Online Pay">Online Pay (UPI)</option>
+                            <option value="Cash">Cash (नकद)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>भुगतान तिथि (Date):</label>
+                        <input type="date" name="formDate" id="formDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>विवरण / रिमार्क (Remarks):</label>
+                        <input type="text" name="remarks" id="remarks" placeholder="उदा. Installment 2">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic QR Code Sidebar (Right Side - Screen Only) -->
+            <div class="qr-sidebar">
+                <div style="font-weight: bold; font-size: 12px; color: var(--primary); margin-bottom: 8px;">SCAN & PAY HERE</div>
+                <div class="qr-box" id="qrBox">
+                    <img id="qrImage" src="" alt="Enter Mobile Number...">
+                </div>
+                <div id="qrMobileLabel" style="font-size: 11px; color: #64748b; font-weight: 600; white-space: pre-line;">MOBILE QR SYSTEM</div>
+            </div>
+        </div>
+
+        <div class="action-area">
+            <button type="submit" class="btn btn-submit" id="submitBtn">डेटा सेव और प्रिंट करें</button>
+            <button type="button" class="btn btn-update" id="updateBtn" onclick="submitData('update')">डेटा अपडेट और प्रिंट करें</button>
+            <button type="button" class="btn btn-wa" onclick="sendWhatsApp()">WhatsApp रसीद भेजें 💬</button>
+            <button type="button" class="btn btn-clear" onclick="clearForm()">क्लियर फॉर्म</button>
+        </div>
+    </form>
+</div>
+
+<!-- PRINT AREA -->
+<div id="printArea">
+    <div class="print-receipt">
+        <div class="receipt-header">
+            <h2>Indian Technical Institute</h2>
+            <p style="margin:4px 0 0 0; font-size:13px; font-weight: bold; letter-spacing: 0.5px;">फीस पावती रसीद / FEES RECEIPT</p>
+        </div>
+        <div class="print-main-content">
+            <table class="print-table">
+                <tr><td class="title">आईडी नंबर (ID No.):</td><td id="p_id">—</td></tr>
+                <tr><td class="title">छात्र का नाम (Name):</td><td id="p_name">—</td></tr>
+                <tr><td class="title">मोबाइल नंबर (Mobile):</td><td id="p_mob">—</td></tr>
+                <tr><td class="title">कोर्स (Course):</td><td id="p_course">—</td></tr>
+                <tr><td class="title">कुल फीस (Total Fees):</td><td id="p_total">₹ 0.00</td></tr>
+                <tr><td class="title">इस बार प्राप्त राशि (Current Paid):</td><td id="p_current" style="font-weight:bold; color:green;">₹ 0.00</td></tr>
+                <tr><td class="title">अब तक कुल जमा (Total Paid):</td><td id="p_paid">₹ 0.00</td></tr>
+                <tr><td class="title">शेष राशि (Due Amount):</td><td id="p_due" style="color:red;">₹ 0.00</td></tr>
+                <tr><td class="title">भुगतान मोड (Mode):</td><td id="p_mode">—</td></tr>
+                <tr><td class="title">तारीख (Date):</td><td id="p_date">—</td></tr>
+            </table>
+            <div class="print-qr-area">
+                <img id="p_qr_img" src="" alt="Scan to Pay">
+                <p style="font-size: 10px; margin-top: 5px; letter-spacing: 0.3px;">SCAN & ENTER AMOUNT</p>
+                <p style="font-size: 9px; color: #475569; margin: 0;">(Due: ₹ <span id="p_qr_due_text">0</span>)</p>
+            </div>
+        </div>
+        <div class="print-footer">
+            <div>रिमार्क: <span id="p_rem">—</span></div>
+            <div>अधिकृत हस्ताक्षर: ____________________</div>
+        </div>
+    </div>
+    <div class="blank-space"></div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzm0A2DjqnH2xn23PPRmlsBJIOu_nlZY3boBAXxZ-QLJDdNiU1TyTAN2LxK0T6qJzYQ/exec";
+    
+    const CONFIG_BANK = {
+        HOLDER_NAME: "ARIF AKHTAR", 
+        MOBILE_NUMBER: "6393261758", 
+        UPI_HANDLE: "@kotak" 
+    };
+
+    let originalPaidFee = 0;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
+        
+        if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('appInterface').style.display = 'block';
+        }
+        generateQR();
+
+        window.addEventListener('online', syncOfflineData);
+        if(navigator.onLine) { syncOfflineData(); }
+    });
+
+    function convertToProperCase(inputElement) {
+        let words = inputElement.value.toLowerCase().split(' ');
+        for (let i = 0; i < words.length; i++) {
+            words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+        }
+        inputElement.value = words.join(' ');
+    }
+
+    function assignAutoFees(courseName) {
+        const feeMap = {
+            "INDUSTRIAL SAFETY": 35000,
+            "ENGLISH SPOKEN": 4000,
+            "ADCA": 12000,
+            "DCA": 9000,
+            "TALLY": 15000,
+            "CCC": 0,
+            "O LEVEL": 0,
+            "OTHER": 0
+        };
+        
+        if (courseName in feeMap) {
+            document.getElementById('totalFee').value = feeMap[courseName] || "";
+            calcBalance();
+        }
+    }
+
+    function calculateDynamicFees() {
+        const currentInst = parseFloat(document.getElementById('currentInstallment').value) || 0;
+        const newTotalPaid = originalPaidFee + currentInst;
+        document.getElementById('paidFee').value = newTotalPaid;
+        calcBalance();
+    }
+
+    function generateQR() {
+        const qrImage = document.getElementById('qrImage');
+        const printQrImage = document.getElementById('p_qr_img');
+        const qrLabel = document.getElementById('qrMobileLabel');
+        
+        const currentInstInput = document.getElementById('currentInstallment').value;
+        const paidFeeInput = document.getElementById('paidFee').value;
+        
+        let activeAmount = parseFloat(currentInstInput) || parseFloat(paidFeeInput) || 0;
+        const fullVpaId = CONFIG_BANK.MOBILE_NUMBER + CONFIG_BANK.UPI_HANDLE;
+        
+        let amountParam = activeAmount > 0 ? `&am=${activeAmount}` : "";
+        let upiString = `upi://pay?pa=${encodeURIComponent(fullVpaId)}&pn=${encodeURIComponent(CONFIG_BANK.HOLDER_NAME)}&cu=INR${amountParam}`;
+        let qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(upiString)}&size=150`;
+        qrImage.src = qrUrl;
+        
+        let printUpiString = `upi://pay?pa=${encodeURIComponent(fullVpaId)}&pn=${encodeURIComponent(CONFIG_BANK.HOLDER_NAME)}&cu=INR`;
+        printQrImage.src = `https://quickchart.io/qr?text=${encodeURIComponent(printUpiString)}&size=150`;
+        
+        if(activeAmount > 0) {
+            qrLabel.innerText = `UPI ID: ${fullVpaId}\nPayee: ${CONFIG_BANK.HOLDER_NAME}\nAmount: ₹${activeAmount}`;
+        } else {
+            qrLabel.innerText = `UPI ID: ${fullVpaId}\nPayee: ${CONFIG_BANK.HOLDER_NAME}`;
+        }
+    }
+
+    function formatToIndianDate(dateString) {
+        if(!dateString) return "—";
+        if(dateString.includes('T')) { dateString = dateString.split('T')[0]; }
+        const parts = dateString.split("-");
+        if(parts.length === 3) { return `${parts[2]}-${parts[1]}-${parts[0]}`; }
+        return dateString;
+    }
+
+    function checkLogin() {
+        const u = document.getElementById('adminUser').value;
+        const p = document.getElementById('adminPass').value;
+        if(u === "admin" && p === "arif@123") {
+            sessionStorage.setItem('isAdminLoggedIn', 'true');
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('appInterface').style.display = 'block';
+            document.getElementById('loginError').style.display = 'none';
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    function logout() {
+        sessionStorage.removeItem('isAdminLoggedIn');
+        document.getElementById('adminUser').value = "";
+        document.getElementById('adminPass').value = "";
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('appInterface').style.display = 'none';
+    }
+
+    function calcBalance() {
+        const t = parseFloat(document.getElementById('totalFee').value) || 0;
+        const p = parseFloat(document.getElementById('paidFee').value) || 0;
+        document.getElementById('balanceFee').value = (t - p) >= 0 ? (t - p) : 0;
+    }
+
+    function showLoad(txt) {
+        document.getElementById('loaderText').innerText = txt;
+        document.getElementById('mainLoader').style.display = 'flex';
+    }
+    function hideLoad() { document.getElementById('mainLoader').style.display = 'none'; }
+
+    function searchStudent() {
+        if (!navigator.onLine) {
+            alert("सर्च करने के लिए इंटरनेट कनेक्शन आवश्यक है!");
+            return;
+        }
+
+        const mob = document.getElementById('searchMobile').value;
+        if(mob.length !== 10) { alert("कृपया 10 अंकों का सही मोबाइल नंबर भरें!"); return; }
+
+        showLoad("डेटा खोजा जा रहा है...");
+        fetch(`${SCRIPT_URL}?action=getStudent&mobile=${mob}`)
+        .then(r => r.json())
+        .then(res => {
+            hideLoad();
+            if(res.result === "error") { alert(res.message); return; }
+
+            document.getElementById('idNo').value = res.idNo || '';
+            document.getElementById('studentName').value = res.studentName || '';
+            document.getElementById('mobile').value = res.mobile || '';
+            document.getElementById('course').value = res.course || '';
+            document.getElementById('totalFee').value = res.totalFee || '';
+            
+            originalPaidFee = parseFloat(res.paidFee) || 0; 
+            document.getElementById('paidFee').value = originalPaidFee;
+            
+            document.getElementById('balanceFee').value = res.balanceFee || '';
+            document.getElementById('paymentMode').value = res.paymentMode || '';
+            document.getElementById('remarks').value = res.remarks || '';
+            document.getElementById('currentInstallment').value = "";
+
+            if(res.formDate) {
+                const dateObj = new Date(res.formDate);
+                const localDate = dateObj.getFullYear() + '-' + 
+                                  String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + 
+                                  String(dateObj.getDate()).padStart(2, '0');
+                document.getElementById('formDate').value = localDate;
+            }
+
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('updateBtn').style.display = 'inline-block';
+            
+            generateQR();
+        }).catch(e => { hideLoad(); alert("त्रुटि: " + e.toString()); });
+    }
+
+    function submitData(act) {
+        const form = document.getElementById('billingForm');
+        const fd = new FormData(form);
+        fd.append('action', act);
+
+        const sp = new URLSearchParams();
+        for (const pair of fd.entries()) { sp.append(pair[0], pair[1]); }
+
+        if (!navigator.onLine) {
+            saveOfflineData(sp.toString());
+            alert("⚠️ इंटरनेट कनेक्शन नहीं है! डेटा स्थानीय रूप से सुरक्षित कर लिया गया है। नेट आते ही यह ऑटो सिंक हो जाएगा।");
+            triggerPrint();
+            return;
+        }
+
+        showLoad("डेटा शीट में सुरक्षित हो रहा है...");
+        fetch(SCRIPT_URL, { method: 'POST', body: sp, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+        .then(r => r.json())
+        .then(res => {
+            hideLoad();
+            if(res.result === "success") {
+                if(act === 'submit' && res.idNo) document.getElementById('idNo').value = res.idNo;
+                alert(res.message);
+                triggerPrint(); 
+            } else { alert("त्रुटि: " + res.message); }
+        }).catch(e => { 
+            hideLoad(); 
+            saveOfflineData(sp.toString());
+            alert("कनेक्शन एरर के कारण डेटा लोकल स्टोरेज में सुरक्षित किया गया है।");
+            triggerPrint();
+        });
+    }
+
+    function saveOfflineData(queryString) {
+        let offlineQueue = JSON.parse(localStorage.getItem('billingOfflineQueue')) || [];
+        offlineQueue.push({ timestamp: new Date().getTime(), data: queryString });
+        localStorage.setItem('billingOfflineQueue', JSON.stringify(offlineQueue));
+    }
+
+    function syncOfflineData() {
+        let offlineQueue = JSON.parse(localStorage.getItem('billingOfflineQueue')) || [];
+        if (offlineQueue.length === 0) return;
+
+        let promises = offlineQueue.map((item, index) => {
+            return fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: item.data,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.result === "success") { return index; }
+                return null;
+            }).catch(() => null);
+        });
+
+        Promise.all(promises).then(results => {
+            let remainingQueue = offlineQueue.filter((item, index) => !results.includes(index));
+            if(remainingQueue.length === 0) {
+                localStorage.removeItem('billingOfflineQueue');
+                alert("🎉 ऑफलाइन सुरक्षित किया गया सारा डेटा ऑटो-सिंक होकर Google Sheet में सेव हो गया है।");
+            } else {
+                localStorage.setItem('billingOfflineQueue', JSON.stringify(remainingQueue));
+            }
+        });
+    }
+
+    function triggerPrint() {
+        const rawDate = document.getElementById('formDate').value;
+        const formattedDate = formatToIndianDate(rawDate);
+        const currentInstVal = document.getElementById('currentInstallment').value || document.getElementById('paidFee').value;
+        const balanceFee = parseFloat(document.getElementById('balanceFee').value) || 0;
+
+        document.getElementById('p_id').innerText = document.getElementById('idNo').value || 'AUTO-GEN';
+        document.getElementById('p_name').innerText = document.getElementById('studentName').value;
+        document.getElementById('p_mob').innerText = document.getElementById('mobile').value;
+        document.getElementById('p_course').innerText = document.getElementById('course').value;
+        document.getElementById('p_total').innerText = '₹ ' + document.getElementById('totalFee').value;
+        
+        document.getElementById('p_current').innerText = '₹ ' + currentInstVal;
+        document.getElementById('p_paid').innerText = '₹ ' + document.getElementById('paidFee').value;
+        
+        document.getElementById('p_due').innerText = '₹ ' + balanceFee;
+        document.getElementById('p_mode').innerText = document.getElementById('paymentMode').value;
+        document.getElementById('p_date').innerText = formattedDate;
+        document.getElementById('p_rem').innerText = document.getElementById('remarks').value || 'None';
+        
+        document.getElementById('p_qr_due_text').innerText = balanceFee;
+
+        const fullVpaId = CONFIG_BANK.MOBILE_NUMBER + CONFIG_BANK.UPI_HANDLE;
+        let printUpiString = `upi://pay?pa=${encodeURIComponent(fullVpaId)}&pn=${encodeURIComponent(CONFIG_BANK.HOLDER_NAME)}&cu=INR`;
+        document.getElementById('p_qr_img').src = `https://quickchart.io/qr?text=${encodeURIComponent(printUpiString)}&size=150`;
+
+        setTimeout(() => {
+            window.print(); 
+            setTimeout(clearForm, 500);
+        }, 300);
+    }
+
+    function sendWhatsApp() {
+        const idNo = document.getElementById('idNo').value || 'AUTO';
+        const n = document.getElementById('studentName').value;
+        const m = document.getElementById('mobile').value;
+        const c = document.getElementById('course').value;
+        if(!n || !m || !c) { alert("कृपया मैसेज भेजने से पहले आवश्यक फ़ील्ड्स भरें!"); return; }
+
+        const rawDate = document.getElementById('formDate').value;
+        const formattedDate = formatToIndianDate(rawDate); 
+        const currentInstVal = document.getElementById('currentInstallment').value || document.getElementById('paidFee').value;
+        const dueAmt = document.getElementById('balanceFee').value || '0';
+
+        const payMobile = CONFIG_BANK.MOBILE_NUMBER; 
+        const payeeName = CONFIG_BANK.HOLDER_NAME;   
+        const fullVpaId = payMobile + CONFIG_BANK.UPI_HANDLE; 
+
+        let msg = `🎓 *INDIAN TECHNICAL INSTITUTE*\n`;
+        msg += `🧾 *FEES RECEIPT*\n\n`;
+        msg += `🆔 *ID No:* ${idNo}\n`;
+        msg += `👤 *Student Name:* ${n}\n`;
+        msg += `📱 *Mobile:* ${m}\n`;
+        msg += `📚 *Course:* ${c}\n`;
+        msg += `💵 *Paid Amount:* ₹${currentInstVal}\n`;
+        msg += `🔻 *Due Balance:* ₹${dueAmt}\n`;
+        msg += `📅 *Date:* ${formattedDate}\n\n`;
+        msg += `💳 *Pay Online (UPI ID):* ${fullVpaId}\n`;
+        msg += `Thank you!`;
+
+        const waUrl = `https://api.whatsapp.com/send?phone=91${m}&text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, '_blank');
+    }
+
+    function clearForm() {
+        document.getElementById('billingForm').reset();
+        document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
+        document.getElementById('submitBtn').style.display = 'inline-block';
+        document.getElementById('updateBtn').style.display = 'none';
+        originalPaidFee = 0;
+        generateQR();
+    }
+</script>
+
+</body>
+</html>
