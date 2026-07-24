@@ -10,6 +10,7 @@
             --secondary: #0284c7;
             --success: #16a34a;
             --danger: #dc2626;
+            --warning: #d97706;
             --dark: #0f172a;
             --light: #f8fafc;
         }
@@ -71,7 +72,7 @@
             font-size: 14px;
         }
 
-        /* Main App Interface with Right Sidebar for QR */
+        /* Main App Interface */
         .app-container {
             max-width: 1200px;
             margin: 15px auto;
@@ -82,7 +83,7 @@
             display: none;
         }
 
-        /* Slim Professional Header */
+        /* Header */
         .app-header {
             background: #0f172a;
             color: white;
@@ -106,7 +107,7 @@
             border-bottom: 1px solid #e2e8f0;
         }
 
-        /* Main Workspace Layout Split */
+        /* Main Workspace Layout */
         .main-workspace {
             display: flex;
             flex-direction: row;
@@ -144,7 +145,32 @@
             border-left: 4px solid var(--primary); border-radius: 0 4px 4px 0;
         }
 
-        /* Interactive QR Sidebar (Screen Only) */
+        /* Live Summary Widgets */
+        .live-dash-container {
+            grid-column: span 3;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .dash-card {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .dash-card.total { border-color: var(--primary); }
+        .dash-card.paid { border-color: var(--success); }
+        .dash-card.due { border-color: var(--danger); }
+        .dash-title { font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; }
+        .dash-val { font-size: 18px; font-weight: 800; color: var(--dark); margin-top: 4px; }
+
+        /* QR Sidebar */
         .qr-sidebar {
             width: 240px;
             padding: 20px;
@@ -174,19 +200,20 @@
             object-fit: contain;
         }
 
-        /* Actions Button Section */
+        /* Actions Section */
         .action-area {
             background: #f8fafc; padding: 15px;
             text-align: center; border-top: 1px solid #e2e8f0;
         }
         .btn {
-            padding: 10px 26px; font-size: 14px; font-weight: bold;
+            padding: 10px 22px; font-size: 14px; font-weight: bold;
             border: none; border-radius: 6px; cursor: pointer; margin: 4px;
             transition: background 0.2s;
         }
         .btn-search { background: var(--secondary); color: white; }
         .btn-submit { background: var(--success); color: white; }
-        .btn-update { background: #d97706; color: white; display: none; }
+        .btn-update { background: var(--warning); color: white; display: none; }
+        .btn-delete { background: var(--danger); color: white; display: none; }
         .btn-wa { background: #25d366; color: white; }
         .btn-clear { background: #64748b; color: white; }
 
@@ -299,7 +326,7 @@
 
     <form id="billingForm" onsubmit="event.preventDefault(); submitData('submit');">
         <div class="main-workspace">
-            <!-- Form Fields (Left Side) -->
+            <!-- Form Fields -->
             <div class="form-section">
                 <div class="form-grid">
                     
@@ -307,7 +334,7 @@
                     
                     <div class="form-group">
                         <label>आईडी नंबर (ID No.):</label>
-                        <input type="text" name="idNo" id="idNo" placeholder="ऑटो जनरेटेड ID">
+                        <input type="text" name="idNo" id="idNo" placeholder="ऑटो जनरेटेड ID" readonly style="background:#f1f5f9;">
                     </div>
                     
                     <div class="form-group">
@@ -373,14 +400,31 @@
                         <input type="date" name="formDate" id="formDate" required>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column: span 3;">
                         <label>विवरण / रिमार्क (Remarks):</label>
                         <input type="text" name="remarks" id="remarks" placeholder="उदा. Installment 2">
                     </div>
+
+                    <!-- 3 LIVE STATS BOXES -->
+                    <div class="live-dash-container">
+                        <div class="dash-card total">
+                            <div class="dash-title">Total Institute Fees</div>
+                            <div class="dash-val" id="liveTotalFee">₹ 0</div>
+                        </div>
+                        <div class="dash-card paid">
+                            <div class="dash-title">Total Received Fees</div>
+                            <div class="dash-val" id="liveTotalPaid" style="color: var(--success);">₹ 0</div>
+                        </div>
+                        <div class="dash-card due">
+                            <div class="dash-title">Total Outstanding Due</div>
+                            <div class="dash-val" id="liveTotalDue" style="color: var(--danger);">₹ 0</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Dynamic QR Code Sidebar (Right Side - Screen Only) -->
+            <!-- Dynamic QR Code Sidebar -->
             <div class="qr-sidebar">
                 <div style="font-weight: bold; font-size: 12px; color: var(--primary); margin-bottom: 8px;">SCAN & PAY HERE</div>
                 <div class="qr-box" id="qrBox">
@@ -393,6 +437,7 @@
         <div class="action-area">
             <button type="submit" class="btn btn-submit" id="submitBtn">डेटा सेव और प्रिंट करें</button>
             <button type="button" class="btn btn-update" id="updateBtn" onclick="submitData('update')">डेटा अपडेट और प्रिंट करें</button>
+            <button type="button" class="btn btn-delete" id="deleteBtn" onclick="deleteStudentData()">डेटा डिलीट करें 🗑️</button>
             <button type="button" class="btn btn-wa" onclick="sendWhatsApp()">WhatsApp रसीद भेजें 💬</button>
             <button type="button" class="btn btn-clear" onclick="clearForm()">क्लियर फॉर्म</button>
         </div>
@@ -434,7 +479,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzm0A2DjqnH2xn23PPRmlsBJIOu_nlZY3boBAXxZ-QLJDdNiU1TyTAN2LxK0T6qJzYQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGTAE_3uBQ-VFGRlxD75bCzYEfOsFU4kknT2VCPMeAFkfgyN5BHqUuZI2JLAI7PxHp/exec";
     
     const CONFIG_BANK = {
         HOLDER_NAME: "ARIF AKHTAR", 
@@ -450,12 +495,26 @@
         if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appInterface').style.display = 'block';
+            fetchLiveSummary();
         }
         generateQR();
 
         window.addEventListener('online', syncOfflineData);
         if(navigator.onLine) { syncOfflineData(); }
     });
+
+    function fetchLiveSummary() {
+        if (!navigator.onLine) return;
+        fetch(`${SCRIPT_URL}?action=getSummary`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.result === "success") {
+                document.getElementById('liveTotalFee').innerText = '₹ ' + Number(data.totalFees).toLocaleString('en-IN');
+                document.getElementById('liveTotalPaid').innerText = '₹ ' + Number(data.totalPaid).toLocaleString('en-IN');
+                document.getElementById('liveTotalDue').innerText = '₹ ' + Number(data.totalDue).toLocaleString('en-IN');
+            }
+        }).catch(() => {});
+    }
 
     function convertToProperCase(inputElement) {
         let words = inputElement.value.toLowerCase().split(' ');
@@ -467,7 +526,7 @@
 
     function assignAutoFees(courseName) {
         const feeMap = {
-            "INDUSTRIAL SAFETY": 35000,
+            "INDUSTRIAL SAFETY":35000,
             "ENGLISH SPOKEN": 4000,
             "ADCA": 12000,
             "DCA": 9000,
@@ -532,6 +591,7 @@
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appInterface').style.display = 'block';
             document.getElementById('loginError').style.display = 'none';
+            fetchLiveSummary();
         } else {
             document.getElementById('loginError').style.display = 'block';
         }
@@ -597,6 +657,7 @@
 
             document.getElementById('submitBtn').style.display = 'none';
             document.getElementById('updateBtn').style.display = 'inline-block';
+            document.getElementById('deleteBtn').style.display = 'inline-block';
             
             generateQR();
         }).catch(e => { hideLoad(); alert("त्रुटि: " + e.toString()); });
@@ -612,7 +673,7 @@
 
         if (!navigator.onLine) {
             saveOfflineData(sp.toString());
-            alert("⚠️ इंटरनेट कनेक्शन नहीं है! डेटा स्थानीय रूप से सुरक्षित कर लिया गया है। नेट आते ही यह ऑटो सिंक हो जाएगा।");
+            alert("⚠️ इंटरनेट कनेक्शन नहीं है! डेटा स्थानीय रूप से सुरक्षित कर लिया गया है।");
             triggerPrint();
             return;
         }
@@ -625,6 +686,7 @@
             if(res.result === "success") {
                 if(act === 'submit' && res.idNo) document.getElementById('idNo').value = res.idNo;
                 alert(res.message);
+                fetchLiveSummary();
                 triggerPrint(); 
             } else { alert("त्रुटि: " + res.message); }
         }).catch(e => { 
@@ -633,6 +695,39 @@
             alert("कनेक्शन एरर के कारण डेटा लोकल स्टोरेज में सुरक्षित किया गया है।");
             triggerPrint();
         });
+    }
+
+    function deleteStudentData() {
+        const mob = document.getElementById('mobile').value;
+        const idNo = document.getElementById('idNo').value;
+        const name = document.getElementById('studentName').value;
+
+        if(!mob && !idNo) {
+            alert("डिलीट करने के लिए मोबाइल नंबर या ID होना आवश्यक है!");
+            return;
+        }
+
+        if(confirm(`क्या आप वाकई ${name} (ID: ${idNo}) का रिकॉर्ड Google Sheet से डिलीट करना चाहते हैं?`)) {
+            showLoad("डेटा डिलीट किया जा रहा है...");
+            const sp = new URLSearchParams();
+            sp.append('action', 'delete');
+            sp.append('mobile', mob);
+            sp.append('idNo', idNo);
+
+            fetch(SCRIPT_URL, { method: 'POST', body: sp, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+            .then(r => r.json())
+            .then(res => {
+                hideLoad();
+                alert(res.message);
+                if(res.result === "success") {
+                    clearForm();
+                    fetchLiveSummary();
+                }
+            }).catch(e => {
+                hideLoad();
+                alert("त्रुटि: " + e.toString());
+            });
+        }
     }
 
     function saveOfflineData(queryString) {
@@ -662,6 +757,7 @@
             let remainingQueue = offlineQueue.filter((item, index) => !results.includes(index));
             if(remainingQueue.length === 0) {
                 localStorage.removeItem('billingOfflineQueue');
+                fetchLiveSummary();
                 alert("🎉 ऑफलाइन सुरक्षित किया गया सारा डेटा ऑटो-सिंक होकर Google Sheet में सेव हो गया है।");
             } else {
                 localStorage.setItem('billingOfflineQueue', JSON.stringify(remainingQueue));
@@ -701,6 +797,16 @@
         }, 300);
     }
 
+    function clearForm() {
+        document.getElementById('billingForm').reset();
+        document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
+        document.getElementById('submitBtn').style.display = 'inline-block';
+        document.getElementById('updateBtn').style.display = 'none';
+        document.getElementById('deleteBtn').style.display = 'none';
+        originalPaidFee = 0;
+        generateQR();
+    }
+
     function sendWhatsApp() {
         const idNo = document.getElementById('idNo').value || 'AUTO';
         const n = document.getElementById('studentName').value;
@@ -717,24 +823,37 @@
         const payeeName = CONFIG_BANK.HOLDER_NAME;   
         const fullVpaId = payMobile + CONFIG_BANK.UPI_HANDLE; 
 
-        let msg = `🎓 *INDIAN TECHNICAL INSTITUTE*\n`;
-        msg += `🧾 *FEES RECEIPT*\n\n`;
-        msg += `🆔 *ID No:* ${idNo}\n`;
-        msg += `👤 *Student Name:* ${n}\n`;
-        msg += `📱 *Mobile:* ${m}\n`;
-        msg += `📚 *Course:* ${c}\n`;
-        msg += `💵 *Paid Amount:* ₹${currentInstVal}\n`;
-        msg += `🔻 *Due Balance:* ₹${dueAmt}\n`;
-        msg += `📅 *Date:* ${formattedDate}\n\n`;
-        msg += `💳 *Pay Online (UPI ID):* ${fullVpaId}\n`;
-        msg += `Thank you!`;
+        // QR Code generation using QuickChart Web Link System
+        const upiString = `upi://pay?pa=${encodeURIComponent(fullVpaId)}&pn=${encodeURIComponent(payeeName)}&cu=INR`;
+        const qrWebLink = `https://quickchart.io/qr?text=${encodeURIComponent(upiString)}&size=300`;
 
-        const waUrl = `https://api.whatsapp.com/send?phone=91${m}&text=${encodeURIComponent(msg)}`;
+        // URL parsing logic updated: yahan dynamic link ko inline form me convert kiya gaya hai taaki WhatsApp iska top custom auto-preview card block kar de, par text ke bilkul end me click karne wala text clickable link bana rahega.
+        const msgText = `*INDIAN TECHNICAL INSTITUTE*\n` +
+                        `*FEES RECEIPTS / फीस पावती*\n\n` +
+                        `• *Receipt ID:* ${idNo}\n` +
+                        `• *Student Name:* ${n}\n` +
+                        `• *Course Name:* ${c}\n` +
+                        `• *Date:* ${formattedDate}\n\n` +
+                        `=========================\n` +
+                        `• *Total Fees:* ₹${document.getElementById('totalFee').value}\n` +
+                        `• *Current Paid:* ₹${currentInstVal}\n` +
+                        `• *Total Paid:* ₹${document.getElementById('paidFee').value}\n` +
+                        `• *Due Amount:* ₹${dueAmt}\n` +
+                        `=========================\n\n` +
+                        `*बाकी बची फीस ऑनलाइन जमा करने के लिए नीचे दिए लिंक पर क्लिक करके qr का स्क्रीन शॉट लें :*\n\n` +
+                        `👉 ${qrWebLink}\n\n` +
+                        `Thank You!\n` +
+                        `Contact: ${payMobile}`;
+
+        // WhatsApp Custom API parameter "preview_hint=false" lagaya gaya hai jo application system ko strictly trigger karta hai ki top header media display ko remove kare.
+        const waUrl = `https://api.whatsapp.com/send?phone=91${m}&text=${encodeURIComponent(msgText)}&preview_hint=false`;
         window.open(waUrl, '_blank');
     }
 
     function clearForm() {
         document.getElementById('billingForm').reset();
+        document.getElementById('idNo').value = "";
+        document.getElementById('searchMobile').value = "";
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
         document.getElementById('submitBtn').style.display = 'inline-block';
         document.getElementById('updateBtn').style.display = 'none';
@@ -742,6 +861,5 @@
         generateQR();
     }
 </script>
-
 </body>
 </html>
