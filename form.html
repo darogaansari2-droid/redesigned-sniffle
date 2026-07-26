@@ -762,7 +762,7 @@
             let remainingQueue = offlineQueue.filter((item, index) => !results.includes(index));
             if(remainingQueue.length === 0) {
                 localStorage.removeItem('billingOfflineQueue');
-                alert("🎉 ऑफलाइन सुरक्षित किया गया सारा डेटा ऑटो-सिंक होकर  Sheet में सेव हो गया है।");
+                alert("🎉 ऑफलाइन सुरक्षित किया गया सारा डेटा ऑटो-सिंक होकर  google Sheet में सेव हो गया है।");
             } else {
                 localStorage.setItem('billingOfflineQueue', JSON.stringify(remainingQueue));
             }
