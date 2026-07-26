@@ -10,7 +10,6 @@
             --secondary: #0284c7;
             --success: #16a34a;
             --danger: #dc2626;
-            --warning: #d97706;
             --dark: #0f172a;
             --light: #f8fafc;
         }
@@ -83,7 +82,7 @@
             display: none;
         }
 
-        /* Header */
+        /* Slim Professional Header */
         .app-header {
             background: #0f172a;
             color: white;
@@ -99,6 +98,26 @@
             background: var(--danger); color: white; border: none;
             padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px;
         }
+        .settings-toggle-btn {
+            background: var(--secondary); color: white; border: none;
+            padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; margin-right: 8px;
+        }
+
+        /* Settings Area */
+        .settings-card {
+            background: #eff6ff;
+            border: 2px dashed #93c5fd;
+            padding: 15px 25px;
+            margin: 15px 25px;
+            border-radius: 8px;
+            display: none;
+        }
+        .settings-card h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
 
         /* Search Area */
         .search-area {
@@ -107,7 +126,7 @@
             border-bottom: 1px solid #e2e8f0;
         }
 
-        /* Main Workspace Layout */
+        /* Main Workspace Layout Split */
         .main-workspace {
             display: flex;
             flex-direction: row;
@@ -145,32 +164,7 @@
             border-left: 4px solid var(--primary); border-radius: 0 4px 4px 0;
         }
 
-        /* Live Summary Widgets */
-        .live-dash-container {
-            grid-column: span 3;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-            padding: 12px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-        }
-        .dash-card {
-            background: white;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .dash-card.total { border-color: var(--primary); }
-        .dash-card.paid { border-color: var(--success); }
-        .dash-card.due { border-color: var(--danger); }
-        .dash-title { font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; }
-        .dash-val { font-size: 18px; font-weight: 800; color: var(--dark); margin-top: 4px; }
-
-        /* QR Sidebar */
+        /* Interactive QR Sidebar */
         .qr-sidebar {
             width: 240px;
             padding: 20px;
@@ -200,20 +194,19 @@
             object-fit: contain;
         }
 
-        /* Actions Section */
+        /* Actions Button Section */
         .action-area {
             background: #f8fafc; padding: 15px;
             text-align: center; border-top: 1px solid #e2e8f0;
         }
         .btn {
-            padding: 10px 22px; font-size: 14px; font-weight: bold;
+            padding: 10px 26px; font-size: 14px; font-weight: bold;
             border: none; border-radius: 6px; cursor: pointer; margin: 4px;
             transition: background 0.2s;
         }
         .btn-search { background: var(--secondary); color: white; }
         .btn-submit { background: var(--success); color: white; }
-        .btn-update { background: var(--warning); color: white; display: none; }
-        .btn-delete { background: var(--danger); color: white; display: none; }
+        .btn-update { background: #d97706; color: white; display: none; }
         .btn-wa { background: #25d366; color: white; }
         .btn-clear { background: #64748b; color: white; }
 
@@ -234,7 +227,7 @@
 
         @media print {
             body { background: white; padding: 0; margin: 0; }
-            .marquee-container, .login-overlay, .app-container, .loader, .qr-sidebar { display: none !important; }
+            .marquee-container, .login-overlay, .app-container, .loader, .qr-sidebar, .settings-card { display: none !important; }
             #printArea { 
                 display: block !important; 
                 width: 210mm; 
@@ -310,9 +303,39 @@
     <div class="app-header">
         <div class="app-header-text">
             <h1>INDIAN TECHNICAL INSTITUTE</h1>
-            <p>FEES MANAGEMENT Mobile No. 6393261758</p>
+            <p id="headerSubText">FEES MANAGEMENT SYSTEM</p>
         </div>
-        <button class="logout-btn" onclick="logout()">Log Out</button>
+        <div>
+            <button class="settings-toggle-btn" onclick="toggleSettings()">⚙️ Drive & Bank Setup</button>
+            <button class="logout-btn" onclick="logout()">Log Out</button>
+        </div>
+    </div>
+
+    <!-- SETTINGS PANEL FOR USER GOOGLE DRIVE SETUP -->
+    <div class="settings-card" id="settingsPanel">
+        <h3>⚙️ अपना Google Sheet Web App URL और UPI सेट करें</h3>
+        <p style="font-size: 12px; color: #475569; margin-top: -5px;">आप जो डेटा भरेंगे वह आपके द्वारा नीचे दी गई Google Sheet में ही सेव होगा।</p>
+        <div class="settings-grid">
+            <div class="form-group" style="grid-column: span 3;">
+                <label>आपकी Google Web App URL (Script URL):</label>
+                <input type="text" id="cfgScriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+            <div class="form-group">
+                <label>खाताधारक का नाम (Holder Name):</label>
+                <input type="text" id="cfgHolderName" placeholder="उदा. ARIF AKHTAR">
+            </div>
+            <div class="form-group">
+                <label>UPI मोबाइल नंबर / नंबर:</label>
+                <input type="tel" id="cfgMobile" placeholder="उदा. 6393261758">
+            </div>
+            <div class="form-group">
+                <label>UPI हैंडल / Suffix:</label>
+                <input type="text" id="cfgUpiHandle" placeholder="उदा. @kotak या @paytm">
+            </div>
+        </div>
+        <div style="text-align: right; margin-top: 12px;">
+            <button type="button" class="btn btn-submit" style="padding: 6px 18px;" onclick="saveUserSettings()">सेटिंग्स सेव करें</button>
+        </div>
     </div>
 
     <!-- Search Panel -->
@@ -326,7 +349,7 @@
 
     <form id="billingForm" onsubmit="event.preventDefault(); submitData('submit');">
         <div class="main-workspace">
-            <!-- Form Fields -->
+            <!-- Form Fields (Left Side) -->
             <div class="form-section">
                 <div class="form-grid">
                     
@@ -334,7 +357,7 @@
                     
                     <div class="form-group">
                         <label>आईडी नंबर (ID No.):</label>
-                        <input type="text" name="idNo" id="idNo" placeholder="ऑटो जनरेटेड ID" readonly style="background:#f1f5f9;">
+                        <input type="text" name="idNo" id="idNo" placeholder="ऑटो जनरेटेड ID">
                     </div>
                     
                     <div class="form-group">
@@ -400,31 +423,14 @@
                         <input type="date" name="formDate" id="formDate" required>
                     </div>
 
-                    <div class="form-group" style="grid-column: span 3;">
+                    <div class="form-group">
                         <label>विवरण / रिमार्क (Remarks):</label>
                         <input type="text" name="remarks" id="remarks" placeholder="उदा. Installment 2">
                     </div>
-
-                    <!-- 3 LIVE STATS BOXES -->
-                    <div class="live-dash-container">
-                        <div class="dash-card total">
-                            <div class="dash-title">Total Institute Fees</div>
-                            <div class="dash-val" id="liveTotalFee">₹ 0</div>
-                        </div>
-                        <div class="dash-card paid">
-                            <div class="dash-title">Total Received Fees</div>
-                            <div class="dash-val" id="liveTotalPaid" style="color: var(--success);">₹ 0</div>
-                        </div>
-                        <div class="dash-card due">
-                            <div class="dash-title">Total Outstanding Due</div>
-                            <div class="dash-val" id="liveTotalDue" style="color: var(--danger);">₹ 0</div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
-            <!-- Dynamic QR Code Sidebar -->
+            <!-- Dynamic QR Code Sidebar (Right Side - Screen Only) -->
             <div class="qr-sidebar">
                 <div style="font-weight: bold; font-size: 12px; color: var(--primary); margin-bottom: 8px;">SCAN & PAY HERE</div>
                 <div class="qr-box" id="qrBox">
@@ -437,7 +443,6 @@
         <div class="action-area">
             <button type="submit" class="btn btn-submit" id="submitBtn">डेटा सेव और प्रिंट करें</button>
             <button type="button" class="btn btn-update" id="updateBtn" onclick="submitData('update')">डेटा अपडेट और प्रिंट करें</button>
-            <button type="button" class="btn btn-delete" id="deleteBtn" onclick="deleteStudentData()">डेटा डिलीट करें 🗑️</button>
             <button type="button" class="btn btn-wa" onclick="sendWhatsApp()">WhatsApp रसीद भेजें 💬</button>
             <button type="button" class="btn btn-clear" onclick="clearForm()">क्लियर फॉर्म</button>
         </div>
@@ -479,12 +484,13 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGTAE_3uBQ-VFGRlxD75bCzYEfOsFU4kknT2VCPMeAFkfgyN5BHqUuZI2JLAI7PxHp/exec";
+    // DYNAMIC SCRIPT & BANK SETTINGS FROM LOCALSTORAGE
+    let SCRIPT_URL = localStorage.getItem('cfg_script_url') || "";
     
-    const CONFIG_BANK = {
-        HOLDER_NAME: "ARIF AKHTAR", 
-        MOBILE_NUMBER: "6393261758", 
-        UPI_HANDLE: "@kotak" 
+    let CONFIG_BANK = {
+        HOLDER_NAME: localStorage.getItem('cfg_holder_name') || "ARIF AKHTAR", 
+        MOBILE_NUMBER: localStorage.getItem('cfg_mobile') || "6393261758", 
+        UPI_HANDLE: localStorage.getItem('cfg_upi_handle') || "@kotak" 
     };
 
     let originalPaidFee = 0;
@@ -492,10 +498,15 @@
     window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
         
+        // Load Saved Settings to UI Input fields
+        document.getElementById('cfgScriptUrl').value = SCRIPT_URL;
+        document.getElementById('cfgHolderName').value = CONFIG_BANK.HOLDER_NAME;
+        document.getElementById('cfgMobile').value = CONFIG_BANK.MOBILE_NUMBER;
+        document.getElementById('cfgUpiHandle').value = CONFIG_BANK.UPI_HANDLE;
+
         if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appInterface').style.display = 'block';
-            fetchLiveSummary();
         }
         generateQR();
 
@@ -503,17 +514,35 @@
         if(navigator.onLine) { syncOfflineData(); }
     });
 
-    function fetchLiveSummary() {
-        if (!navigator.onLine) return;
-        fetch(`${SCRIPT_URL}?action=getSummary`)
-        .then(res => res.json())
-        .then(data => {
-            if(data.result === "success") {
-                document.getElementById('liveTotalFee').innerText = '₹ ' + Number(data.totalFees).toLocaleString('en-IN');
-                document.getElementById('liveTotalPaid').innerText = '₹ ' + Number(data.totalPaid).toLocaleString('en-IN');
-                document.getElementById('liveTotalDue').innerText = '₹ ' + Number(data.totalDue).toLocaleString('en-IN');
-            }
-        }).catch(() => {});
+    function toggleSettings() {
+        const panel = document.getElementById('settingsPanel');
+        panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function saveUserSettings() {
+        const url = document.getElementById('cfgScriptUrl').value.trim();
+        const holder = document.getElementById('cfgHolderName').value.trim();
+        const mob = document.getElementById('cfgMobile').value.trim();
+        const handle = document.getElementById('cfgUpiHandle').value.trim();
+
+        if(!url.startsWith("https://script.google.com/")) {
+            alert("कृपया सही Google Apps Script Web App URL दर्ज करें!");
+            return;
+        }
+
+        localStorage.setItem('cfg_script_url', url);
+        localStorage.setItem('cfg_holder_name', holder);
+        localStorage.setItem('cfg_mobile', mob);
+        localStorage.setItem('cfg_upi_handle', handle);
+
+        SCRIPT_URL = url;
+        CONFIG_BANK.HOLDER_NAME = holder;
+        CONFIG_BANK.MOBILE_NUMBER = mob;
+        CONFIG_BANK.UPI_HANDLE = handle;
+
+        generateQR();
+        alert("🎉 आपकी सेटिंग्स सफलतापूर्वक सेव हो गई हैं! अब डेटा आपकी गूगल शीट में जाएगा।");
+        toggleSettings();
     }
 
     function convertToProperCase(inputElement) {
@@ -526,7 +555,7 @@
 
     function assignAutoFees(courseName) {
         const feeMap = {
-            "INDUSTRIAL SAFETY":35000,
+            "INDUSTRIAL SAFETY": 35000,
             "ENGLISH SPOKEN": 4000,
             "ADCA": 12000,
             "DCA": 9000,
@@ -590,8 +619,6 @@
             sessionStorage.setItem('isAdminLoggedIn', 'true');
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appInterface').style.display = 'block';
-            document.getElementById('loginError').style.display = 'none';
-            fetchLiveSummary();
         } else {
             document.getElementById('loginError').style.display = 'block';
         }
@@ -618,6 +645,12 @@
     function hideLoad() { document.getElementById('mainLoader').style.display = 'none'; }
 
     function searchStudent() {
+        if (!SCRIPT_URL) {
+            alert("⚠️ कृपया पहले '⚙️ Drive & Bank Setup' बटन पर क्लिक करके अपनी Google Web App URL सेव करें!");
+            toggleSettings();
+            return;
+        }
+
         if (!navigator.onLine) {
             alert("सर्च करने के लिए इंटरनेट कनेक्शन आवश्यक है!");
             return;
@@ -657,13 +690,18 @@
 
             document.getElementById('submitBtn').style.display = 'none';
             document.getElementById('updateBtn').style.display = 'inline-block';
-            document.getElementById('deleteBtn').style.display = 'inline-block';
             
             generateQR();
         }).catch(e => { hideLoad(); alert("त्रुटि: " + e.toString()); });
     }
 
     function submitData(act) {
+        if (!SCRIPT_URL) {
+            alert("⚠️ कृपया पहले '⚙️ Drive & Bank Setup' बटन पर क्लिक करके अपनी Google Web App URL सेट करें!");
+            toggleSettings();
+            return;
+        }
+
         const form = document.getElementById('billingForm');
         const fd = new FormData(form);
         fd.append('action', act);
@@ -673,7 +711,7 @@
 
         if (!navigator.onLine) {
             saveOfflineData(sp.toString());
-            alert("⚠️ इंटरनेट कनेक्शन नहीं है! डेटा स्थानीय रूप से सुरक्षित कर लिया गया है।");
+            alert("⚠️ इंटरनेट कनेक्शन नहीं है! डेटा स्थानीय रूप से सुरक्षित कर लिया गया है। नेट आते ही यह ऑटो सिंक हो जाएगा।");
             triggerPrint();
             return;
         }
@@ -686,7 +724,6 @@
             if(res.result === "success") {
                 if(act === 'submit' && res.idNo) document.getElementById('idNo').value = res.idNo;
                 alert(res.message);
-                fetchLiveSummary();
                 triggerPrint(); 
             } else { alert("त्रुटि: " + res.message); }
         }).catch(e => { 
@@ -697,39 +734,6 @@
         });
     }
 
-    function deleteStudentData() {
-        const mob = document.getElementById('mobile').value;
-        const idNo = document.getElementById('idNo').value;
-        const name = document.getElementById('studentName').value;
-
-        if(!mob && !idNo) {
-            alert("डिलीट करने के लिए मोबाइल नंबर या ID होना आवश्यक है!");
-            return;
-        }
-
-        if(confirm(`क्या आप वाकई ${name} (ID: ${idNo}) का रिकॉर्ड Google Sheet से डिलीट करना चाहते हैं?`)) {
-            showLoad("डेटा डिलीट किया जा रहा है...");
-            const sp = new URLSearchParams();
-            sp.append('action', 'delete');
-            sp.append('mobile', mob);
-            sp.append('idNo', idNo);
-
-            fetch(SCRIPT_URL, { method: 'POST', body: sp, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-            .then(r => r.json())
-            .then(res => {
-                hideLoad();
-                alert(res.message);
-                if(res.result === "success") {
-                    clearForm();
-                    fetchLiveSummary();
-                }
-            }).catch(e => {
-                hideLoad();
-                alert("त्रुटि: " + e.toString());
-            });
-        }
-    }
-
     function saveOfflineData(queryString) {
         let offlineQueue = JSON.parse(localStorage.getItem('billingOfflineQueue')) || [];
         offlineQueue.push({ timestamp: new Date().getTime(), data: queryString });
@@ -737,6 +741,7 @@
     }
 
     function syncOfflineData() {
+        if(!SCRIPT_URL) return;
         let offlineQueue = JSON.parse(localStorage.getItem('billingOfflineQueue')) || [];
         if (offlineQueue.length === 0) return;
 
@@ -757,7 +762,6 @@
             let remainingQueue = offlineQueue.filter((item, index) => !results.includes(index));
             if(remainingQueue.length === 0) {
                 localStorage.removeItem('billingOfflineQueue');
-                fetchLiveSummary();
                 alert("🎉 ऑफलाइन सुरक्षित किया गया सारा डेटा ऑटो-सिंक होकर Google Sheet में सेव हो गया है।");
             } else {
                 localStorage.setItem('billingOfflineQueue', JSON.stringify(remainingQueue));
@@ -797,16 +801,6 @@
         }, 300);
     }
 
-    function clearForm() {
-        document.getElementById('billingForm').reset();
-        document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
-        document.getElementById('submitBtn').style.display = 'inline-block';
-        document.getElementById('updateBtn').style.display = 'none';
-        document.getElementById('deleteBtn').style.display = 'none';
-        originalPaidFee = 0;
-        generateQR();
-    }
-
     function sendWhatsApp() {
         const idNo = document.getElementById('idNo').value || 'AUTO';
         const n = document.getElementById('studentName').value;
@@ -823,41 +817,30 @@
         const payeeName = CONFIG_BANK.HOLDER_NAME;   
         const fullVpaId = payMobile + CONFIG_BANK.UPI_HANDLE; 
 
-        // QR Code generation using QuickChart Web Link System
-        const upiString = `upi://pay?pa=${encodeURIComponent(fullVpaId)}&pn=${encodeURIComponent(payeeName)}&cu=INR`;
-        const qrWebLink = `https://quickchart.io/qr?text=${encodeURIComponent(upiString)}&size=300`;
+        let msg = `🎓 *INDIAN TECHNICAL INSTITUTE*\n` +
+                  `🧾 *FEES RECEIPT*\n` +
+                  `------------------------------\n` +
+                  `🆔 *ID No:* ${idNo}\n` +
+                  `👤 *Student Name:* ${n}\n` +
+                  `📚 *Course:* ${c}\n` +
+                  `💵 *Current Received:* ₹${currentInstVal}\n` +
+                  `🔴 *Due Amount:* ₹${dueAmt}\n` +
+                  `📅 *Date:* ${formattedDate}\n` +
+                  `------------------------------\n` +
+                  `💳 *Pay Remaining Fees via UPI:*\n` +
+                  `UPI ID: ${fullVpaId}\n` +
+                  `Payee: ${payeeName}\n\n` +
+                  `Thank You! 🙏`;
 
-        // URL parsing logic updated: yahan dynamic link ko inline form me convert kiya gaya hai taaki WhatsApp iska top custom auto-preview card block kar de, par text ke bilkul end me click karne wala text clickable link bana rahega.
-        const msgText = `*INDIAN TECHNICAL INSTITUTE*\n` +
-                        `*FEES RECEIPTS / फीस पावती*\n\n` +
-                        `• *Receipt ID:* ${idNo}\n` +
-                        `• *Student Name:* ${n}\n` +
-                        `• *Course Name:* ${c}\n` +
-                        `• *Date:* ${formattedDate}\n\n` +
-                        `=========================\n` +
-                        `• *Total Fees:* ₹${document.getElementById('totalFee').value}\n` +
-                        `• *Current Paid:* ₹${currentInstVal}\n` +
-                        `• *Total Paid:* ₹${document.getElementById('paidFee').value}\n` +
-                        `• *Due Amount:* ₹${dueAmt}\n` +
-                        `=========================\n\n` +
-                        `*बाकी बची फीस ऑनलाइन जमा करने के लिए नीचे दिए लिंक पर क्लिक करके qr का स्क्रीन शॉट लें :*\n\n` +
-                        `👉 ${qrWebLink}\n\n` +
-                        `Thank You!\n` +
-                        `Contact: ${payMobile}`;
-
-        // WhatsApp Custom API parameter "preview_hint=false" lagaya gaya hai jo application system ko strictly trigger karta hai ki top header media display ko remove kare.
-        const waUrl = `https://api.whatsapp.com/send?phone=91${m}&text=${encodeURIComponent(msgText)}&preview_hint=false`;
-        window.open(waUrl, '_blank');
+        window.open(`https://wa.me/91${m}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function clearForm() {
         document.getElementById('billingForm').reset();
-        document.getElementById('idNo').value = "";
-        document.getElementById('searchMobile').value = "";
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
+        originalPaidFee = 0;
         document.getElementById('submitBtn').style.display = 'inline-block';
         document.getElementById('updateBtn').style.display = 'none';
-        originalPaidFee = 0;
         generateQR();
     }
 </script>
