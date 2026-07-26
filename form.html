@@ -20,7 +20,8 @@
             margin: 0; 
             padding: 0; 
             color: var(--dark);
-            overflow-x: hidden;
+            /* overflow-x hidden हटाकर auto किया ताकि मोबाइल में लेआउट लॉक न हो */
+            overflow-x: auto;
         }
 
         /* Fixed Marquee System */
@@ -49,6 +50,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
         }
         .login-box {
             background: white;
@@ -59,6 +62,7 @@
             max-width: 380px;
             text-align: center;
             border-top: 5px solid var(--primary);
+            box-sizing: border-box;
         }
         .login-box h2 { margin-top: 0; color: var(--primary); font-size: 22px; }
         .login-box input {
@@ -80,6 +84,8 @@
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
             overflow: hidden;
             display: none;
+            width: 95%;
+            box-sizing: border-box;
         }
 
         /* Slim Professional Header */
@@ -90,6 +96,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .app-header-text { text-align: left; }
         .app-header h1 { margin: 0; font-size: 22px; letter-spacing: 0.5px; display: inline-block; }
@@ -151,6 +159,8 @@
             border-radius: 6px;
             font-size: 14px;
             transition: all 0.2s;
+            box-sizing: border-box;
+            width: 100%;
         }
         input:focus, select:focus {
             outline: none; border-color: var(--secondary);
@@ -174,6 +184,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            box-sizing: border-box;
         }
         .qr-box {
             background: white;
@@ -187,6 +198,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            box-sizing: border-box;
         }
         .qr-box img {
             width: 100%;
@@ -221,6 +233,96 @@
             border-radius: 50%; animation: run 1s linear infinite; margin-bottom: 12px;
         }
         @keyframes run { 100% { transform: rotate(360deg); } }
+
+        /* ========================================================= */
+        /* MOBILE RESPONSIVE STYLES (मोबाइल के लिए नए रेस्पॉन्सिव रूल्स) */
+        /* ========================================================= */
+        @media screen and (max-width: 768px) {
+            .app-container {
+                width: 96%;
+                margin: 10px auto;
+                border-radius: 8px;
+            }
+
+            .app-header {
+                padding: 10px 15px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .app-header-text h1 {
+                font-size: 18px;
+            }
+
+            .app-header p {
+                margin-left: 0;
+                display: block;
+                margin-top: 4px;
+            }
+
+            .main-workspace {
+                flex-direction: column;
+            }
+
+            .form-section {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 15px;
+            }
+
+            .section-title {
+                grid-column: span 1;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-card {
+                margin: 10px;
+                padding: 12px;
+            }
+
+            .settings-grid .form-group {
+                grid-column: span 1 !important;
+            }
+
+            .search-area {
+                padding: 12px 15px;
+            }
+
+            .search-area > div {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+
+            .search-area input, .search-area button {
+                width: 100%;
+            }
+
+            .qr-sidebar {
+                width: 100%;
+                border-top: 1px solid #e2e8f0;
+                padding: 15px;
+            }
+
+            .action-area {
+                display: flex;
+                flex-direction: column;
+                padding: 10px 15px;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 4px 0;
+            }
+        }
 
         /* PRINT SETTINGS */
         #printArea { display: none; }
@@ -488,8 +590,8 @@
     let SCRIPT_URL = localStorage.getItem('cfg_script_url') || "";
     
     let CONFIG_BANK = {
-        HOLDER_NAME: localStorage.getItem('cfg_holder_name') || "SHAHIK ANSARI", 
-        MOBILE_NUMBER: localStorage.getItem('cfg_mobile') || "9076824492", 
+        HOLDER_NAME: localStorage.getItem('cfg_holder_name') || "ARIF AKHTAR", 
+        MOBILE_NUMBER: localStorage.getItem('cfg_mobile') || "6393261758", 
         UPI_HANDLE: localStorage.getItem('cfg_upi_handle') || "@kotak" 
     };
 
@@ -741,106 +843,81 @@
     }
 
     function syncOfflineData() {
-        if(!SCRIPT_URL) return;
         let offlineQueue = JSON.parse(localStorage.getItem('billingOfflineQueue')) || [];
-        if (offlineQueue.length === 0) return;
+        if(offlineQueue.length === 0 || !SCRIPT_URL) return;
 
-        let promises = offlineQueue.map((item, index) => {
+        showLoad("ऑफलाइन डेटा सिंक किया जा रहा है...");
+        let promises = offlineQueue.map(item => {
             return fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: item.data,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            })
-            .then(r => r.json())
-            .then(res => {
-                if(res.result === "success") { return index; }
-                return null;
-            }).catch(() => null);
+            });
         });
 
-        Promise.all(promises).then(results => {
-            let remainingQueue = offlineQueue.filter((item, index) => !results.includes(index));
-            if(remainingQueue.length === 0) {
-                localStorage.removeItem('billingOfflineQueue');
-                alert("🎉 ऑफलाइन सुरक्षित किया गया सारा डेटा ऑटो-सिंक होकर  google Sheet में सेव हो गया है।");
-            } else {
-                localStorage.setItem('billingOfflineQueue', JSON.stringify(remainingQueue));
-            }
+        Promise.all(promises).then(() => {
+            localStorage.removeItem('billingOfflineQueue');
+            hideLoad();
+            alert("🎉 सभी ऑफलाइन रिकॉर्ड सफलतापूर्वक सिंक हो चुके हैं!");
+        }).catch(() => {
+            hideLoad();
         });
     }
 
     function triggerPrint() {
-        const rawDate = document.getElementById('formDate').value;
-        const formattedDate = formatToIndianDate(rawDate);
-        const currentInstVal = document.getElementById('currentInstallment').value || document.getElementById('paidFee').value;
-        const balanceFee = parseFloat(document.getElementById('balanceFee').value) || 0;
-
-        document.getElementById('p_id').innerText = document.getElementById('idNo').value || 'AUTO-GEN';
-        document.getElementById('p_name').innerText = document.getElementById('studentName').value;
-        document.getElementById('p_mob').innerText = document.getElementById('mobile').value;
-        document.getElementById('p_course').innerText = document.getElementById('course').value;
-        document.getElementById('p_total').innerText = '₹ ' + document.getElementById('totalFee').value;
+        document.getElementById('p_id').innerText = document.getElementById('idNo').value || "—";
+        document.getElementById('p_name').innerText = document.getElementById('studentName').value || "—";
+        document.getElementById('p_mob').innerText = document.getElementById('mobile').value || "—";
+        document.getElementById('p_course').innerText = document.getElementById('course').value || "—";
         
-        document.getElementById('p_current').innerText = '₹ ' + currentInstVal;
-        document.getElementById('p_paid').innerText = '₹ ' + document.getElementById('paidFee').value;
-        
-        document.getElementById('p_due').innerText = '₹ ' + balanceFee;
-        document.getElementById('p_mode').innerText = document.getElementById('paymentMode').value;
-        document.getElementById('p_date').innerText = formattedDate;
-        document.getElementById('p_rem').innerText = document.getElementById('remarks').value || 'None';
-        
-        document.getElementById('p_qr_due_text').innerText = balanceFee;
+        const tot = parseFloat(document.getElementById('totalFee').value) || 0;
+        const cur = parseFloat(document.getElementById('currentInstallment').value) || parseFloat(document.getElementById('paidFee').value) || 0;
+        const paid = parseFloat(document.getElementById('paidFee').value) || 0;
+        const due = parseFloat(document.getElementById('balanceFee').value) || 0;
 
-        const fullVpaId = CONFIG_BANK.MOBILE_NUMBER + CONFIG_BANK.UPI_HANDLE;
-        let printUpiString = `upi://pay?pa=${encodeURIComponent(fullVpaId)}&pn=${encodeURIComponent(CONFIG_BANK.HOLDER_NAME)}&cu=INR`;
-        document.getElementById('p_qr_img').src = `https://quickchart.io/qr?text=${encodeURIComponent(printUpiString)}&size=150`;
+        document.getElementById('p_total').innerText = "₹ " + tot.toFixed(2);
+        document.getElementById('p_current').innerText = "₹ " + cur.toFixed(2);
+        document.getElementById('p_paid').innerText = "₹ " + paid.toFixed(2);
+        document.getElementById('p_due').innerText = "₹ " + due.toFixed(2);
+        document.getElementById('p_qr_due_text').innerText = due.toFixed(2);
 
-        setTimeout(() => {
-            window.print(); 
-            setTimeout(clearForm, 500);
-        }, 300);
+        document.getElementById('p_mode').innerText = document.getElementById('paymentMode').value || "—";
+        document.getElementById('p_date').innerText = formatToIndianDate(document.getElementById('formDate').value);
+        document.getElementById('p_rem').innerText = document.getElementById('remarks').value || "—";
+
+        window.print();
     }
 
     function sendWhatsApp() {
-        const idNo = document.getElementById('idNo').value || 'AUTO';
-        const n = document.getElementById('studentName').value;
-        const m = document.getElementById('mobile').value;
-        const c = document.getElementById('course').value;
-        if(!n || !m || !c) { alert("कृपया मैसेज भेजने से पहले आवश्यक फ़ील्ड्स भरें!"); return; }
+        const mob = document.getElementById('mobile').value;
+        const name = document.getElementById('studentName').value;
+        const course = document.getElementById('course').value;
+        const cur = parseFloat(document.getElementById('currentInstallment').value) || parseFloat(document.getElementById('paidFee').value) || 0;
+        const due = document.getElementById('balanceFee').value;
+        const dt = formatToIndianDate(document.getElementById('formDate').value);
 
-        const rawDate = document.getElementById('formDate').value;
-        const formattedDate = formatToIndianDate(rawDate); 
-        const currentInstVal = document.getElementById('currentInstallment').value || document.getElementById('paidFee').value;
-        const dueAmt = document.getElementById('balanceFee').value || '0';
+        if(!mob || mob.length !== 10) { alert("कृपया व्हाट्सएप मैसेज भेजने के लिए सही मोबाइल नंबर दर्ज करें!"); return; }
 
-        const payMobile = CONFIG_BANK.MOBILE_NUMBER; 
-        const payeeName = CONFIG_BANK.HOLDER_NAME;   
-        const fullVpaId = payMobile + CONFIG_BANK.UPI_HANDLE; 
+        let msg = `*INDIAN TECHNICAL INSTITUTE*\n` +
+                  `*FEES RECEIPT / फीस रसीद*\n\n` +
+                  `प्रिय छात्र *${name}*,\n` +
+                  `आपकी फीस की प्राप्ति सफलतापूर्वक दर्ज कर ली गई है।\n\n` +
+                  `📚 *कोर्स:* ${course}\n` +
+                  `💵 *प्राप्त राशि:* ₹${cur}\n` +
+                  `🔻 *शेष फीस (Due):* ₹${due}\n` +
+                  `📅 *तारीख:* ${dt}\n\n` +
+                  `धन्यवाद!\n` +
+                  `*Indian Technical Institute*`;
 
-        let msg = `🎓 *INDIAN TECHNICAL INSTITUTE*\n` +
-                  `🧾 *FEES RECEIPT*\n` +
-                  `------------------------------\n` +
-                  `🆔 *ID No:* ${idNo}\n` +
-                  `👤 *Student Name:* ${n}\n` +
-                  `📚 *Course:* ${c}\n` +
-                  `💵 *Current Received:* ₹${currentInstVal}\n` +
-                  `🔴 *Due Amount:* ₹${dueAmt}\n` +
-                  `📅 *Date:* ${formattedDate}\n` +
-                  `------------------------------\n` +
-                  `💳 *Pay Remaining Fees via UPI:*\n` +
-                  `UPI ID: ${fullVpaId}\n` +
-                  `Payee: ${payeeName}\n\n` +
-                  `Thank You! 🙏`;
-
-        window.open(`https://wa.me/91${m}?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`https://wa.me/91${mob}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function clearForm() {
         document.getElementById('billingForm').reset();
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
-        originalPaidFee = 0;
         document.getElementById('submitBtn').style.display = 'inline-block';
         document.getElementById('updateBtn').style.display = 'none';
+        originalPaidFee = 0;
         generateQR();
     }
 </script>
