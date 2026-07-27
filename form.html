@@ -20,7 +20,6 @@
             margin: 0; 
             padding: 0; 
             color: var(--dark);
-            /* overflow-x hidden हटाकर auto किया ताकि मोबाइल में लेआउट लॉक न हो */
             overflow-x: auto;
         }
 
@@ -127,6 +126,27 @@
             gap: 12px;
         }
 
+        /* LIVE DASHBOARD BOXES */
+        .live-summary-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 15px 25px 5px 25px;
+            background: #f8fafc;
+        }
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary);
+            text-align: center;
+        }
+        .summary-card.paid { border-left-color: var(--success); }
+        .summary-card.due { border-left-color: var(--danger); }
+        .summary-card span { display: block; font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; }
+        .summary-card h3 { margin: 5px 0 0 0; font-size: 18px; color: var(--dark); }
+
         /* Search Area */
         .search-area {
             background: #f1f5f9; 
@@ -219,6 +239,7 @@
         .btn-search { background: var(--secondary); color: white; }
         .btn-submit { background: var(--success); color: white; }
         .btn-update { background: #d97706; color: white; display: none; }
+        .btn-delete { background: var(--danger); color: white; display: none; }
         .btn-wa { background: #25d366; color: white; }
         .btn-clear { background: #64748b; color: white; }
 
@@ -234,142 +255,44 @@
         }
         @keyframes run { 100% { transform: rotate(360deg); } }
 
-        /* ========================================================= */
-        /* MOBILE RESPONSIVE STYLES (मोबाइल के लिए नए रेस्पॉन्सिव रूल्स) */
-        /* ========================================================= */
+        /* MOBILE RESPONSIVE STYLES */
         @media screen and (max-width: 768px) {
-            .app-container {
-                width: 96%;
-                margin: 10px auto;
-                border-radius: 8px;
-            }
-
-            .app-header {
-                padding: 10px 15px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .app-header-text h1 {
-                font-size: 18px;
-            }
-
-            .app-header p {
-                margin-left: 0;
-                display: block;
-                margin-top: 4px;
-            }
-
-            .main-workspace {
-                flex-direction: column;
-            }
-
-            .form-section {
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-                padding: 15px;
-            }
-
-            .section-title {
-                grid-column: span 1;
-            }
-
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .settings-card {
-                margin: 10px;
-                padding: 12px;
-            }
-
-            .settings-grid .form-group {
-                grid-column: span 1 !important;
-            }
-
-            .search-area {
-                padding: 12px 15px;
-            }
-
-            .search-area > div {
-                flex-direction: column;
-                align-items: stretch !important;
-                gap: 8px !important;
-            }
-
-            .search-area input, .search-area button {
-                width: 100%;
-            }
-
-            .qr-sidebar {
-                width: 100%;
-                border-top: 1px solid #e2e8f0;
-                padding: 15px;
-            }
-
-            .action-area {
-                display: flex;
-                flex-direction: column;
-                padding: 10px 15px;
-            }
-
-            .btn {
-                width: 100%;
-                margin: 4px 0;
-            }
+            .app-container { width: 96%; margin: 10px auto; border-radius: 8px; }
+            .app-header { padding: 10px 15px; flex-direction: column; align-items: flex-start; }
+            .app-header-text h1 { font-size: 18px; }
+            .app-header p { margin-left: 0; display: block; margin-top: 4px; }
+            .main-workspace { flex-direction: column; }
+            .form-section { border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .form-grid { grid-template-columns: 1fr; gap: 12px; padding: 15px; }
+            .section-title { grid-column: span 1; }
+            .settings-grid { grid-template-columns: 1fr; }
+            .settings-card { margin: 10px; padding: 12px; }
+            .settings-grid .form-group { grid-column: span 1 !important; }
+            .search-area { padding: 12px 15px; }
+            .search-area > div { flex-direction: column; align-items: stretch !important; gap: 8px !important; }
+            .search-area input, .search-area button { width: 100%; }
+            .live-summary-container { grid-template-columns: 1fr; gap: 8px; padding: 10px 15px; }
+            .qr-sidebar { width: 100%; border-top: 1px solid #e2e8f0; padding: 15px; }
+            .action-area { display: flex; flex-direction: column; padding: 10px 15px; }
+            .btn { width: 100%; margin: 4px 0; }
         }
 
         /* PRINT SETTINGS */
         #printArea { display: none; }
-
         @media print {
             body { background: white; padding: 0; margin: 0; }
             .marquee-container, .login-overlay, .app-container, .loader, .qr-sidebar, .settings-card { display: none !important; }
-            #printArea { 
-                display: block !important; 
-                width: 210mm; 
-                height: 297mm; 
-                box-sizing: border-box;
-                padding: 10mm;
-            }
-            .print-receipt {
-                height: auto; 
-                border: 2px dashed #475569;
-                padding: 20px;
-                box-sizing: border-box;
-                position: relative;
-            }
+            #printArea { display: block !important; width: 210mm; height: 297mm; box-sizing: border-box; padding: 10mm; }
+            .print-receipt { height: auto; border: 2px dashed #475569; padding: 20px; box-sizing: border-box; position: relative; }
             .receipt-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
             .receipt-header h2 { margin: 0; font-size: 24px; text-transform: uppercase; color: #000; }
-            
-            .print-main-content {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-            }
+            .print-main-content { display: flex; justify-content: space-between; align-items: flex-start; }
             .print-table { width: 65%; border-collapse: collapse; font-size: 14px; }
             .print-table td { padding: 6px; border-bottom: 1px dotted #666; }
             .print-table td.title { font-weight: bold; width: 45%; }
-            
-            .print-qr-area {
-                width: 30%;
-                text-align: center;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                border: 1px dashed #cbd5e1;
-                padding: 10px;
-                border-radius: 6px;
-            }
+            .print-qr-area { width: 30%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px; }
             .print-qr-area img { width: 110px; height: 110px; }
             .print-qr-area p { margin: 5px 0 0 0; font-weight: bold; }
-            
             .print-footer { margin-top: 25px; display: flex; justify-content: space-between; font-size: 14px; font-style: italic; width: 100%; }
             .blank-space { height: 20mm; }
         }
@@ -413,7 +336,7 @@
         </div>
     </div>
 
-    <!-- SETTINGS PANEL FOR USER GOOGLE DRIVE SETUP -->
+    <!-- SETTINGS PANEL -->
     <div class="settings-card" id="settingsPanel">
         <h3>⚙️ अपना Google Sheet Web App URL और UPI सेट करें</h3>
         <p style="font-size: 12px; color: #475569; margin-top: -5px;">आप जो डेटा भरेंगे वह आपके द्वारा नीचे दी गई Google Sheet में ही सेव होगा।</p>
@@ -440,6 +363,22 @@
         </div>
     </div>
 
+    <!-- LIVE FEES SUMMARY DASHBOARD -->
+    <div class="live-summary-container">
+        <div class="summary-card">
+            <span>कुल फीस (Total Fees)</span>
+            <h3 id="liveTotalFee">₹ 0.00</h3>
+        </div>
+        <div class="summary-card paid">
+            <span>कुल जमा फीस (Total Paid)</span>
+            <h3 id="livePaidFee" style="color: var(--success);">₹ 0.00</h3>
+        </div>
+        <div class="summary-card due">
+            <span>कुल बाकी फीस (Total Due)</span>
+            <h3 id="liveDueFee" style="color: var(--danger);">₹ 0.00</h3>
+        </div>
+    </div>
+
     <!-- Search Panel -->
     <div class="search-area">
         <div style="display: flex; gap: 15px; align-items: center; max-width: 650px; margin: 0 auto;">
@@ -459,7 +398,7 @@
                     
                     <div class="form-group">
                         <label>आईडी नंबर (ID No.):</label>
-                        <input type="text" name="idNo" id="idNo" placeholder="ऑटो जनरेटेड ID">
+                        <input type="text" name="idNo" id="idNo" placeholder="ऑटो जनरेटेड ID (उदा. ITI-01)">
                     </div>
                     
                     <div class="form-group">
@@ -532,7 +471,7 @@
                 </div>
             </div>
 
-            <!-- Dynamic QR Code Sidebar (Right Side - Screen Only) -->
+            <!-- Dynamic QR Code Sidebar -->
             <div class="qr-sidebar">
                 <div style="font-weight: bold; font-size: 12px; color: var(--primary); margin-bottom: 8px;">SCAN & PAY HERE</div>
                 <div class="qr-box" id="qrBox">
@@ -545,6 +484,7 @@
         <div class="action-area">
             <button type="submit" class="btn btn-submit" id="submitBtn">डेटा सेव और प्रिंट करें</button>
             <button type="button" class="btn btn-update" id="updateBtn" onclick="submitData('update')">डेटा अपडेट और प्रिंट करें</button>
+            <button type="button" class="btn btn-delete" id="deleteBtn" onclick="deleteStudent()">डेटा डिलीट करें 🗑️</button>
             <button type="button" class="btn btn-wa" onclick="sendWhatsApp()">WhatsApp रसीद भेजें 💬</button>
             <button type="button" class="btn btn-clear" onclick="clearForm()">क्लियर फॉर्म</button>
         </div>
@@ -586,7 +526,6 @@
 </div>
 
 <script>
-    // DYNAMIC SCRIPT & BANK SETTINGS FROM LOCALSTORAGE
     let SCRIPT_URL = localStorage.getItem('cfg_script_url') || "";
     
     let CONFIG_BANK = {
@@ -600,7 +539,6 @@
     window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
         
-        // Load Saved Settings to UI Input fields
         document.getElementById('cfgScriptUrl').value = SCRIPT_URL;
         document.getElementById('cfgHolderName').value = CONFIG_BANK.HOLDER_NAME;
         document.getElementById('cfgMobile').value = CONFIG_BANK.MOBILE_NUMBER;
@@ -611,6 +549,7 @@
             document.getElementById('appInterface').style.display = 'block';
         }
         generateQR();
+        calcBalance();
 
         window.addEventListener('online', syncOfflineData);
         if(navigator.onLine) { syncOfflineData(); }
@@ -643,7 +582,7 @@
         CONFIG_BANK.UPI_HANDLE = handle;
 
         generateQR();
-        alert("🎉 आपकी सेटिंग्स सफलतापूर्वक सेव हो गई हैं! अब डेटा आपकी गूगल शीट में जाएगा।");
+        alert("🎉 आपकी सेटिंग्स सफलतापूर्वक सेव हो गई हैं!");
         toggleSettings();
     }
 
@@ -737,7 +676,13 @@
     function calcBalance() {
         const t = parseFloat(document.getElementById('totalFee').value) || 0;
         const p = parseFloat(document.getElementById('paidFee').value) || 0;
-        document.getElementById('balanceFee').value = (t - p) >= 0 ? (t - p) : 0;
+        const due = (t - p) >= 0 ? (t - p) : 0;
+        
+        document.getElementById('balanceFee').value = due;
+
+        document.getElementById('liveTotalFee').innerText = "₹ " + t.toFixed(2);
+        document.getElementById('livePaidFee').innerText = "₹ " + p.toFixed(2);
+        document.getElementById('liveDueFee').innerText = "₹ " + due.toFixed(2);
     }
 
     function showLoad(txt) {
@@ -777,7 +722,6 @@
             originalPaidFee = parseFloat(res.paidFee) || 0; 
             document.getElementById('paidFee').value = originalPaidFee;
             
-            document.getElementById('balanceFee').value = res.balanceFee || '';
             document.getElementById('paymentMode').value = res.paymentMode || '';
             document.getElementById('remarks').value = res.remarks || '';
             document.getElementById('currentInstallment').value = "";
@@ -792,9 +736,55 @@
 
             document.getElementById('submitBtn').style.display = 'none';
             document.getElementById('updateBtn').style.display = 'inline-block';
+            document.getElementById('deleteBtn').style.display = 'inline-block';
             
+            calcBalance();
             generateQR();
         }).catch(e => { hideLoad(); alert("त्रुटि: " + e.toString()); });
+    }
+
+    function deleteStudent() {
+        const mob = document.getElementById('mobile').value;
+        const name = document.getElementById('studentName').value;
+
+        if(!mob) {
+            alert("डिलीट करने के लिए कोई मोबाइल नंबर मौजूद नहीं है!");
+            return;
+        }
+
+        if(!confirm(`क्या आप सचमुच छात्र "${name}" (${mob}) का डेटा पूरी तरह डिलीट करना चाहते हैं?`)) {
+            return;
+        }
+
+        let offlineQueue = JSON.parse(localStorage.getItem('billingOfflineQueue')) || [];
+        offlineQueue = offlineQueue.filter(item => !item.data.includes(`mobile=${mob}`));
+        localStorage.setItem('billingOfflineQueue', JSON.stringify(offlineQueue));
+
+        if (navigator.onLine && SCRIPT_URL) {
+            showLoad("डेटा डिलीट किया जा रहा है...");
+            const sp = new URLSearchParams();
+            sp.append('action', 'deleteStudent');
+            sp.append('mobile', mob);
+
+            fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                body: sp, 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' } 
+            })
+            .then(r => r.json())
+            .then(res => {
+                hideLoad();
+                alert(res.message || "डेटा सफलतापूर्वक डिलीट कर दिया गया!");
+                clearForm();
+            })
+            .catch(e => {
+                hideLoad();
+                alert("त्रुटि: " + e.toString());
+            });
+        } else {
+            alert("लोकल डेटा साफ़ कर दिया गया है।");
+            clearForm();
+        }
     }
 
     function submitData(act) {
@@ -813,8 +803,9 @@
 
         if (!navigator.onLine) {
             saveOfflineData(sp.toString());
-            alert("⚠️ इंटरनेट कनेक्शन नहीं है! डेटा स्थानीय रूप से सुरक्षित कर लिया गया है। नेट आते ही यह ऑटो सिंक हो जाएगा।");
+            alert("⚠️ इंटरनेट कनेक्शन नहीं है! डेटा स्थानीय रूप से सुरक्षित कर लिया गया है।");
             triggerPrint();
+            clearForm();
             return;
         }
 
@@ -826,13 +817,15 @@
             if(res.result === "success") {
                 if(act === 'submit' && res.idNo) document.getElementById('idNo').value = res.idNo;
                 alert(res.message);
-                triggerPrint(); 
+                triggerPrint();
+                clearForm();
             } else { alert("त्रुटि: " + res.message); }
         }).catch(e => { 
             hideLoad(); 
             saveOfflineData(sp.toString());
             alert("कनेक्शन एरर के कारण डेटा लोकल स्टोरेज में सुरक्षित किया गया है।");
             triggerPrint();
+            clearForm();
         });
     }
 
@@ -914,10 +907,13 @@
 
     function clearForm() {
         document.getElementById('billingForm').reset();
+        document.getElementById('searchMobile').value = "";
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
         document.getElementById('submitBtn').style.display = 'inline-block';
         document.getElementById('updateBtn').style.display = 'none';
+        document.getElementById('deleteBtn').style.display = 'none';
         originalPaidFee = 0;
+        calcBalance();
         generateQR();
     }
 </script>
