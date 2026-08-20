@@ -2,9 +2,11 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indian Technical Institute</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
+        * { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; min-height: 100%; font-family: Arial, sans-serif; }
         
         /* Background Gradient */
         body { 
@@ -29,9 +31,9 @@
 
         /* मार्की (चलने वाली पट्टी) स्टाइल */
         .marquee-banner {
-            background-color: #008000; /* ग्रीन बैकग्राउंड */
-            color: #ffffff;            /* सफ़ेद फॉन्ट */
-            font-weight: bold;         /* बोल्ड फॉन्ट */
+            background-color: #008000;
+            color: #ffffff;
+            font-weight: bold;
             font-size: 16px;
             padding: 6px 0;
             border-bottom: 1px solid #ffcc00;
@@ -45,6 +47,8 @@
             display: block; 
             border-radius: 50%; 
             object-fit: cover; 
+            background: #fff;
+            padding: 2px;
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.7)); 
         }
 
@@ -68,11 +72,141 @@
             padding-top: 175px; 
         }
 
+        /* ----- बैनर और साइड पोस्टर्स का मेन लेआउट ----- */
+        .banner-wrapper-grid {
+            width: 98%;
+            max-width: 1350px;
+            margin: 20px auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* साइड पोस्टर कार्ड्स (Left & Right) */
+        .side-trainer-card {
+            flex: 0 0 220px;
+            height: 450px;
+            background: rgba(11, 29, 58, 0.9);
+            border: 2px solid #ffcc00;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+
+        .side-trainer-card img {
+            width: 100%;
+            height: 230px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ffcc00;
+        }
+
+        .side-trainer-card h4 {
+            color: #ffcc00;
+            margin: 8px 0 4px 0;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+
+        .side-trainer-card p {
+            color: #ffffff;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.3;
+        }
+
+        .side-trainer-card .trainer-contact {
+            background: #ffcc00;
+            color: #000;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* ----- ऑटो 4-वे बैनर स्लाइडर CSS ----- */
+        .banner-container {
+            flex: 1;
+            height: 450px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            background: #1a365d;
+        }
+
+        .slide-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 1s ease-in-out;
+        }
+
+        .slide-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .slide-item.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(0, 0) !important;
+        }
+
+        /* 4-दिशाओं की एनिमेटेड पोजीशन */
+        .from-top { transform: translateY(-100%); }
+        .from-bottom { transform: translateY(100%); }
+        .from-left { transform: translateX(-100%); }
+        .from-right { transform: translateX(100%); }
+
+        /* ----- बैनर के नीचे 4-लाइन का लेख सेक्शन ----- */
+        .banner-about-section {
+            width: 98%;
+            max-width: 1350px;
+            margin: 0 auto 30px auto;
+            background: rgba(11, 29, 58, 0.85);
+            border: 2px solid #ffcc00;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .banner-about-section h2 {
+            color: #ffcc00;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .banner-about-section p {
+            color: #ffffff;
+            font-size: 15px;
+            line-height: 1.7;
+            margin: 0;
+            text-shadow: 1px 1px 2px #000;
+        }
+
         /* कंटेनर और सेक्शन्स */
         .container { padding-left: 15px; color: white; text-shadow: 2px 2px 4px #000; padding-right: 15px; padding-bottom: 30px; }
         
-        /* होम कंटेंट डिफ़ॉल्ट रूप से दिखेगा */
-        #mainContent { display: block; }
+        #homeSection { display: block; }
         #mainIndexSection, #coursesSection { display: none; } 
 
         /* लॉगिन मॉडल */
@@ -92,20 +226,6 @@
             margin-top: 20px;
         }
 
-        @media (max-width: 768px) {
-            .home-grid {
-                grid-template-columns: 1fr;
-            }
-            .main-wrapper {
-                padding-top: 205px;
-            }
-            .header-text h1 { font-size: 18px; }
-            .header-text p { font-size: 11px; }
-            nav a { margin: 0 5px; font-size: 12px; }
-            .logo-container { top: 35px; }
-            .logo-container img { height: 50px; width: 50px; }
-        }
-
         .info-section { 
             background: rgba(0, 0, 0, 0.6); 
             padding: 20px; 
@@ -117,14 +237,19 @@
         }
         .info-section h3 { color: #ffcc00; margin-top: 0; }
 
-        /* Home Page Image Styling */
-        .section-img {
+        .img-box {
             width: 100%;
-            height: 350px;
-            object-fit: cover;
+            height: 320px;
             border-radius: 8px;
             margin-bottom: 15px;
             border: 2px solid #ffcc00;
+            overflow: hidden;
+        }
+        .section-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         /* सॉफ्टवेयर और लिंक्स ग्रिड */
@@ -136,23 +261,46 @@
         .software-card p { font-size: 13px; margin: 0 0 15px 0; color: #ddd; }
         .software-btn { background: #ffcc00; color: black; border: none; padding: 8px 15px; font-weight: bold; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; }
         .software-btn:hover { background: white; }
+
+        /* मीडिया क्वेरी */
+        @media (max-width: 1024px) {
+            .banner-wrapper-grid { flex-direction: column; }
+            .side-trainer-card { width: 100%; max-width: 900px; height: auto; flex-direction: row; gap: 15px; text-align: left; }
+            .side-trainer-card img { width: 130px; height: 130px; }
+            .side-trainer-card .trainer-contact { width: auto; }
+            .banner-container { width: 100%; height: 350px; }
+        }
+
+        @media (max-width: 768px) {
+            .home-grid { grid-template-columns: 1fr; }
+            .main-wrapper { padding-top: 210px; }
+            .banner-container { height: 250px; }
+            .img-box { height: 220px; }
+            .side-trainer-card { flex-direction: column; text-align: center; }
+            .side-trainer-card img { width: 100%; height: 180px; }
+            .banner-about-section h2 { font-size: 16px; }
+            .banner-about-section p { font-size: 13px; line-height: 1.6; }
+            .header-text h1 { font-size: 18px; }
+            .header-text p { font-size: 11px; }
+            nav { text-align: center; padding-top: 5px; }
+            nav a { margin: 0 4px; font-size: 11px; display: inline-block; }
+            .logo-container { top: 35px; }
+            .logo-container img { height: 45px; width: 45px; }
+        }
     </style>
 </head>
 <body>
 
 <!-- हमेशा फिक्स रहने वाला हेडर -->
 <div class="fixed-header">
-    <!-- चलने वाली हरी मार्की पट्टी -->
     <div class="marquee-banner">
         <marquee scrollamount="6">Welcome to Indian Technical Institute, Padrauna Railway Station, Near Pragya Radio -:- Mobile No. 6393261758 , 9076824492 | Admisson For New Batch - फायर सेफ्टी, स्पोकन इंग्लिश एवं एडवांस कंप्यूटर कोर्सेज</marquee>
     </div>
 
-    <!-- कॉलेज लोगो -->
     <div class="logo-container">
         <img src="https://i.imgur.com/7ZtDCzy.jpeg" alt="Indian Technical Institute Logo">
     </div>
 
-    <!-- ऊपर का मेनू (Navigation) -->
     <nav>
         <a onclick="showHome()">Home</a>
         <a onclick="showMainIndex()">Main Index</a>
@@ -161,7 +309,6 @@
         <a onclick="closeWebsite()">Logout</a>
     </nav>
 
-    <!-- शीर्षक एवं लक्ष्य -->
     <div class="header-text">
         <h1>Indian Technical Institute Padrauna</h1>
         <p>हमारा लक्ष्य छात्रों को तकनीकी रूप से सक्षम, कुशल और विभिन्न क्षेत्रों में आत्मनिर्भर बनाना है।</p>
@@ -170,6 +317,80 @@
 
 <!-- मुख्य सामग्री रैपर -->
 <div class="main-wrapper">
+
+    <!-- स्थायी बैनर + दोनों तरफ के ट्रेनर कार्ड्स (यह हमेशा दिखता रहेगा) -->
+    <div class="banner-wrapper-grid">
+        <!-- बायां कार्ड (LEFT): फायर सेफ्टी ट्रेनर कार्ड -->
+        <div class="side-trainer-card">
+            <img src="head 1.jpeg" alt="Fire Safety Trainer">
+            <div>
+                <h4>🧯 Fire Safety Trainer</h4>
+                <p><strong>औद्योगिक सुरक्षा विशेषज्ञ</strong></p>
+                <p>व्यावहारिक प्रशिक्षण और जॉब प्लेसमेंट सपोर्ट</p>
+<p><strong>📍 पता:</strong> पडरौना, रेडियो प्रज्ञा के बगल में।</p>
+
+            </div>
+            <div class="trainer-contact">📞 Call: 9076824492</div>
+        </div>
+
+        <!-- बीच का ऑटो 4-वे बैनर स्लाइडर -->
+        <div class="banner-container">
+            <div class="slide-item from-left active">
+                <img src="photo 1.jpeg" alt="Banner Photo 1">
+            </div>
+            <div class="slide-item from-top">
+                <img src="photo 2.jpeg" alt="Banner Photo 2">
+            </div>
+            <div class="slide-item from-right">
+                <img src="photo 3.jpeg" alt="Banner Photo 3">
+            </div>
+            <div class="slide-item from-bottom">
+                <img src="photo 4.jpeg" alt="Banner Photo 4">
+            </div>
+            <div class="slide-item from-left">
+                <img src="photo 5.jpeg" alt="Banner Photo 5">
+            </div>
+            <div class="slide-item from-top">
+                <img src="photo 6.jpeg" alt="Banner Photo 6">
+            </div>
+            <div class="slide-item from-right">
+                <img src="photo 7.jpeg" alt="Banner Photo 7">
+            </div>
+            <div class="slide-item from-bottom">
+                <img src="photo 8.jpeg" alt="Banner Photo 8">
+            </div>
+            <div class="slide-item from-left">
+                <img src="photo 9.jpeg" alt="Banner Photo 9">
+            </div>
+            <div class="slide-item from-top">
+                <img src="photo 10.jpeg" alt="Banner Photo 10">
+            </div>
+        </div>
+
+        <!-- दायां कार्ड (RIGHT): स्पोकन इंग्लिश ट्रेनर कार्ड -->
+        <div class="side-trainer-card">
+            <img src="head 2.jpeg" alt="Spoken English Trainer">
+            <div>
+                <h4>🗣️ Spoken English Trainer</h4>
+                <p><strong>कम्युनिकेशन व पर्सनालिटी एक्सपर्ट</strong></p>
+                <p>बेसिक से एडवांस इंग्लिश एवं इंटरव्यू तैयारी</p>
+<p><strong>📍 पता:</strong> पडरौना, रेडियो प्रज्ञा के बगल में।</p>
+
+            </div>
+            <div class="trainer-contact">📞 Call: 6393261758</div>
+        </div>
+    </div>
+
+    <!-- बैनर के नीचे हमारे संस्थान के बारे में 4-लाइन का लेख (यह भी हमेशा दिखता रहेगा) -->
+    <div class="banner-about-section">
+        <h2>🌟 इंडियन टेक्निकल इंस्टीट्यूट में आपका स्वागत है 🌟</h2>
+        <p>
+            इंडियन टेक्निकल इंस्टीट्यूट पडरौना का एक अग्रणी तकनीकी शिक्षण संस्थान है, जहाँ छात्रों को व्यावहारिक ज्ञान देकर पूरी तरह से दक्ष बनाया जाता है। <br>
+            हम फायर सेफ्टी, स्पोकन इंग्लिश और एडवांस कंप्यूटर जैसे उच्च स्तरीय जॉब-ओरिएंटेड कोर्सेज का गुणवत्तापूर्ण प्रशिक्षण प्रदान करते हैं। <br>
+            कोर्स सफलतापूर्वक पूरा होने के बाद हम अपने प्रत्येक योग्य छात्र को प्रतिष्ठित कंपनियों और उद्योगों में <strong>100% जॉब और प्लेसमेंट</strong> हेतु भेजते हैं। <br>
+            हमारा मुख्य उद्देश्य युवाओं के हुनर को निखार कर उन्हें एक सफल, सुरक्षित और उज्जवल करियर की दिशा में पूरी तरह आत्मनिर्भर बनाना है।
+        </p>
+    </div>
 
     <!-- लॉगिन पॉप-अप -->
     <div id="loginModal">
@@ -180,132 +401,220 @@
         <button onclick="document.getElementById('loginModal').style.display='none'">Cancel</button>
     </div>
 
-    <!-- 1. होम स्क्रीन सेक्शन (बिना लॉगिन के तुरंत दिखेगा) -->
-    <div id="mainContent" class="container">
+    <!-- बदलती हुई सामग्री (Sections) -->
+    <div class="container">
+        
+        <!-- 1. होम स्क्रीन सेक्शन -->
         <div id="homeSection">
             <div class="home-grid">
-                <!-- फोटो 1: फायर सेफ्टी एवं संस्थान परिचय -->
                 <div class="info-section">
                     <div>
-                        <img src="photo 1.jpeg" alt="Fire Safety Training" class="section-img">
+                        <div class="img-box">
+                            <img src="photo 1.jpeg" alt="Fire Safety Training" class="section-img">
+                        </div>
                         <h3>🧯 फायर सेफ्टी (Fire & Safety Management)</h3>
-                        <p>इंडियन टेक्निकल इंस्टीट्यूट एक प्रतिष्ठित संस्थान है जो युवाओं को रोजगारपरक तकनीकी शिक्षा प्रदान करता है। हमारे संस्थान में फायर एवं सेफ्टी मैनेजमेंट की आधुनिक और व्यावहारिक ट्रेनिंग दी जाती है। यहाँ अनुभवी शिक्षकों द्वारा छात्रों को औद्योगिक सुरक्षा के लिए पूर्ण रूप से तैयार किया जाता है।</p>
+                        <p>इंडियन टेक्निकल इंस्टीट्यूट एक प्रतिष्ठित संस्थान है जो युवाओं को रोजगारपरक तकनीकी शिक्षा प्रदान करता है। हमारे संस्थान में फायर एवं सेफ्टी मैनेजमेंट की आधुनिक और व्यावहारिक ट्रेनिंग दी जाती है।</p>
                     </div>
                 </div>
 
-                <!-- फोटो 2: इंग्लिश स्पोकन -->
                 <div class="info-section">
                     <div>
-                        <img src="photo 2.jpeg" alt="English Spoken & Presentation" class="section-img">
+                        <div class="img-box">
+                            <img src="photo 2.jpeg" alt="English Spoken & Presentation" class="section-img">
+                        </div>
                         <h3>🗣️ स्पोकन इंग्लिश (English Spoken & Communication)</h3>
-                        <p>आज के समय में सफलता प्राप्त करने के लिए धाराप्रवाह अंग्रेजी बोलना और बेहतर संवाद कौशल होना अत्यंत आवश्यक है। हमारे यहाँ स्पोकन इंग्लिश के विशेष बैच चलाए जाते हैं जहाँ बेसिक से लेकर एडवांस लेवल तक की ट्रेनिंग दी जाती है। इसके साथ ही व्यक्तित्व विकास (Personality Development) पर भी ध्यान दिया जाता है।</p>
+                        <p>आज के समय में सफलता प्राप्त करने के लिए धाराप्रवाह अंग्रेजी बोलना और बेहतर संवाद कौशल होना अत्यंत आवश्यक है। हमारे यहाँ स्पोकन इंग्लिश के विशेष बैच चलाए जाते हैं।</p>
                     </div>
                 </div>
 
-                <!-- फोटो 3: कंप्यूटर कोर्स -->
                 <div class="info-section">
                     <div>
-                        <img src="photo 3.jpeg" alt="Computer Education Lab" class="section-img">
+                        <div class="img-box">
+                            <img src="photo 3.jpeg" alt="Computer Education Lab" class="section-img">
+                        </div>
                         <h3>💻 कंप्यूटर शिक्षा (Advanced Computer Education)</h3>
-                        <p>डिजिटल क्रांति के इस दौर में कंप्यूटर का ज्ञान होना अनिवार्य है। हमारे संस्थान में DCA, ADCA, Tally, GST और वेब डिजाइनिंग जैसे कई उपयोगी कंप्यूटर कोर्सेज कराए जाते हैं। हमारे पास आधुनिक कंप्यूटर लैब की उत्तम सुविधा उपलब्ध है जहाँ प्रैक्टिकल ज्ञान पर सबसे ज्यादा जोर दिया जाता है।</p>
+                        <p>डिजिटल क्रांति के इस दौर में कंप्यूटर का ज्ञान होना अनिवार्य है। हमारे संस्थान में DCA, ADCA, Tally, GST और वेब डिजाइनिंग जैसे कोर्सेज कराए जाते हैं।</p>
                     </div>
                 </div>
 
-                <!-- फोटो 4: संस्थान एवं पता -->
                 <div class="info-section">
                     <div>
-                        <img src="photo 4.jpeg" alt="Indian Technical Institute Building" class="section-img">
+                        <div class="img-box">
+                            <img src="photo 4.jpeg" alt="Indian Technical Institute Building" class="section-img">
+                        </div>
                         <h3>🏛️ हमारा संस्थान (Our Institute & Address)</h3>
-                        <p>इंडियन टेक्निकल इंस्टीट्यूट में छात्रों को उज्जवल भविष्य के लिए गुणवत्तापूर्ण शिक्षा और व्यावहारिक प्रशिक्षण प्रदान किया जाता है। हमारे पास आधुनिक कक्षाएं और अनुभवी संकाय मौजूद हैं।</p>
-                        <p><strong>📍 Address :</strong>  Indian Technical Institute, Padrauna Railway Station, Near Pragya Radio -:- Mobile No. 6393261758 , 9076824492 ।</p>
+                        <p>इंडियन टेक्निकल इंस्टीट्यूट में छात्रों को उज्जवल भविष्य के लिए गुणवत्तापूर्ण शिक्षा और व्यावहारिक प्रशिक्षण प्रदान किया जाता है।</p>
+                       
+                    </div>
+                </div>
+
+               <div class="info-section">
+    <div>
+        <div class="img-box">
+            <img src="photo 5.jpeg" alt="Indian Technical Institute Building" class="section-img">
+        </div>
+        <h3>🏛️ संस्थान का परिसर (Institute Infrastructure)</h3>
+        <p>इंडियन टेक्निकल इंस्टीट्यूट का परिसर अत्यंत विशाल, सुरक्षित और आधुनिक सुविधाओं से लैस है।</p>
+        <p>यहाँ छात्रों के पठन-पाठन और व्यावहारिक अभ्यास के लिए खुला एवं अनुशासित वातावरण मिलता है।</p>
+        <p>सुगम आवागमन के साथ यह परिसर तकनीकी शिक्षा प्राप्त करने के लिए एक आदर्श स्थान है।</p>
+       
+    </div>
+</div>
+
+<div class="info-section">
+    <div>
+        <div class="img-box">
+            <img src="photo 6.jpeg" alt="Fire Safety Digital Class" class="section-img">
+        </div>
+        <h3>🔥 फ़ायर सेफ़्टी डिजिटल क्लास (Fire Safety Digital Class)</h3>
+        <p>डिजिटल स्मार्ट क्लासरूम के माध्यम से छात्रों को फायर सेफ्टी और इंडस्ट्रियल सुरक्षा के आधुनिक नियमों का व्यावहारिक ज्ञान दिया जाता है। 3D एनिमेशन और लाइव विजुअल्स से जटिल विषयों को भी आसानी से समझाया जाता है।</p>
+        
+    </div>
+</div>
+
+<div class="info-section">
+    <div>
+        <div class="img-box">
+            <img src="photo 7.jpeg" alt="Press Conference at Institute" class="section-img">
+        </div>
+        <h3>📰 प्रेस वार्ता एवं संस्थान की उपलब्धियां (Press & Media Interaction)</h3>
+        <p>पत्रकार वार्ता के माध्यम से संस्थान की शैक्षणिक उपलब्धियों, शत-प्रतिशत प्लेसमेंट रिकॉर्ड और नए तकनीकी पाठ्यक्रमों की जानकारी साझा की गई। मीडिया जगत ने भी क्षेत्र में गुणवत्तापूर्ण तकनीकी शिक्षा प्रदान करने के लिए संस्थान के प्रयासों की सराहना की।</p>
+        
+    </div>
+</div>
+
+<div class="info-section">
+    <div>
+        <div class="img-box">
+            <img src="photo 8.jpeg" alt="Spoken English Training" class="section-img">
+        </div>
+        <h3>🗣️ स्पोकन इंग्लिश एवं पर्सनालिटी डेवलपमेंट (Spoken English Classes)</h3>
+        <p>तकनीकी ज्ञान के साथ-साथ छात्रों के संचार कौशल (Communication Skills) को मजबूत करने के लिए विशेष स्पोकन इंग्लिश कक्षाएं चलाई जाती हैं। इससे छात्रों में आत्मविश्वास बढ़ता है और वे इंटरनेशनल इंटरव्यू आसानी से क्रैक कर पाते हैं।</p>
+       
+    </div>
+</div>
+
+<div class="info-section">
+    <div>
+        <div class="img-box">
+            <img src="photo 9.jpeg" alt="Hot Work Training" class="section-img">
+        </div>
+        <h3>🔥 हॉट वर्क ट्रेनिंग (Hot Work Practical Training)</h3>
+        <p>वेल्डिंग, कटिंग और ग्राइंडिंग जैसे हॉट वर्क कार्यों के दौरान बरती जाने वाली सावधानियों और सुरक्षा उपकरणों (PPE) के उपयोग का लाइव प्रैक्टिकल दिया जाता है, जिससे छात्र औद्योगिक दुर्घटनाओं से बचाव में निपुण बनते हैं।</p>
+        <p><strong>📍 पता:</strong> पडरौना,  रेडियो प्रज्ञा के बगल में।</p>
+    </div>
+</div>
+
+<div class="info-section">
+    <div>
+        <div class="img-box">
+            <img src="photo 10.jpeg" alt="Crane Lifting Training" class="section-img">
+        </div>
+        <h3>🏗️ क्रेन लिफ्टिंग प्रैक्टिकल ट्रेनिंग (Crane Lifting Safety Training)</h3>
+        <p>भारी सामान उठाने और क्रेन ऑपरेशन्स के दौरान रिगिंग, सिग्नलिंग तथा लोड कैपेसिटी की सटीक जानकारी दी जाती है। छात्र पूरी सुरक्षा मानकों का पालन करते हुए प्रत्यक्ष रूप से लिफ्टिंग का अभ्यास करते हैं।</p>
+        <p><strong>📍 पता:</strong> पडरौना,  रेडियो प्रज्ञा के बगल में।</p>
+    </div>
+</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 2. मेन इंडेक्स सेक्शन -->
-    <div id="mainIndexSection" class="container">
-        <h2 class="section-title">📌 Main Index & Social Media</h2>
-        <div class="software-grid">
-            <div class="software-card">
-                <h4>▶️ YouTube</h4>
-                <p>Video Tutorials & Online Classes.</p>
-                <a href="https://www.youtube.com" target="_blank" class="software-btn">Open YouTube</a>
-            </div>
-            <div class="software-card">
-                <h4>🌐 Facebook</h4>
-                <p>Social Media & Community Updates.</p>
-                <a href="https://www.facebook.com" target="_blank" class="software-btn">Open Facebook</a>
-            </div>
-            <div class="software-card">
-                <h4>📷 Instagram</h4>
-                <p>Visual Media & Institute Highlights.</p>
-                <a href="https://www.instagram.com" target="_blank" class="software-btn">Open Instagram</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. कंप्यूटर कोर्सेज और सॉफ्टवेयर लिस्ट सेक्शन -->
-    <div id="coursesSection" class="container">
-        <h2 class="section-title">💻 Work & Practice Softwares</h2>
-        <div class="software-grid">
-            <div class="software-card">
-                <h4>📄 MS Word / Docs</h4>
-                <p>Typing, Resume, and Documentation work.</p>
-                <a href="https://docs.new" target="_blank" class="software-btn">Open Software</a>
-            </div>
-            <div class="software-card">
-                <h4>📊 MS Excel / Sheets</h4>
-                <p>Data Entry, Billing, and Formulas.</p>
-                <a href="https://sheets.new" target="_blank" class="software-btn">Open Software</a>
-            </div>
-            <div class="software-card">
-                <h4>🪙 Tally / Accounting</h4>
-                <p>Financial Accounting & GST Management.</p>
-                <a href="./cash_book.html" target="_blank" class="software-btn">Open Cash Book</a>
-            </div>
-            <div class="software-card">
-                <h4>📝 Form</h4>
-                <p>Student Form Entry & Details.</p>
-                <a href="./form.html" target="_blank" class="software-btn">Open Form</a>
-            </div>
-            <div class="software-card">
-                <h4>💻 VS Code (Coding)</h4>
-                <p>HTML, CSS & JavaScript Practice.</p>
-                <a href="https://vscode.dev" target="_blank" class="software-btn">Open Editor</a>
-            </div>
-            <div class="software-card">
-                <h4>💬 WhatsApp Web</h4>
-                <p>Chat, Project Sharing & Communication.</p>
-                <a href="https://web.whatsapp.com" target="_blank" class="software-btn">Open WhatsApp</a>
-            </div>
-            <div class="software-card">
-                <h4>📁 Google Drive</h4>
-                <p>Cloud Storage & File Backups.</p>
-                <a href="https://drive.google.com" target="_blank" class="software-btn">Open Drive</a>
+        <!-- 2. मेन इंडेक्स सेक्शन -->
+        <div id="mainIndexSection">
+            <h2 class="section-title">📌 Main Index & Social Media</h2>
+            <div class="software-grid">
+                <div class="software-card">
+                    <h4>▶️ YouTube</h4>
+                    <p>Video Tutorials & Online Classes.</p>
+                    <a href="https://www.youtube.com" target="_blank" class="software-btn">Open YouTube</a>
+                </div>
+                <div class="software-card">
+                    <h4>🌐 Facebook</h4>
+                    <p>Social Media & Community Updates.</p>
+                    <a href="https://www.facebook.com" target="_blank" class="software-btn">Open Facebook</a>
+                </div>
+                <div class="software-card">
+                    <h4>📷 Instagram</h4>
+                    <p>Visual Media & Institute Highlights.</p>
+                    <a href="https://www.instagram.com" target="_blank" class="software-btn">Open Instagram</a>
+                </div>
             </div>
         </div>
 
-        <h2 class="section-title">🔗 Important Resources & Links</h2>
-        <div class="software-grid">
-            <div class="software-card">
-                <h4>💼 Sarkari Result</h4>
-                <p>Latest Govt Jobs, Admit Cards & Results.</p>
-                <a href="https://www.sarkariresult.com" target="_blank" class="software-btn">Visit Website</a>
+        <!-- 3. कंप्यूटर कोर्सेज और सॉफ्टवेयर लिस्ट सेक्शन -->
+        <div id="coursesSection">
+            <h2 class="section-title">💻 Work & Practice Softwares</h2>
+            <div class="software-grid">
+                <div class="software-card">
+                    <h4>📄 MS Word / Docs</h4>
+                    <p>Typing, Resume, and Documentation work.</p>
+                    <a href="https://docs.new" target="_blank" class="software-btn">Open Software</a>
+                </div>
+                <div class="software-card">
+                    <h4>📊 MS Excel / Sheets</h4>
+                    <p>Data Entry, Billing, and Formulas.</p>
+                    <a href="https://sheets.new" target="_blank" class="software-btn">Open Software</a>
+                </div>
+                <div class="software-card">
+                    <h4>🪙 Tally / Accounting</h4>
+                    <p>Financial Accounting & GST Management.</p>
+                    <a href="./cash_book.html" target="_blank" class="software-btn">Open Cash Book</a>
+                </div>
+                <div class="software-card">
+                    <h4>📝 Form</h4>
+                    <p>Student Form Entry & Details.</p>
+                    <a href="./form.html" target="_blank" class="software-btn">Open Form</a>
+                </div>
+                <div class="software-card">
+                    <h4>💻 VS Code (Coding)</h4>
+                    <p>HTML, CSS & JavaScript Practice.</p>
+                    <a href="https://vscode.dev" target="_blank" class="software-btn">Open Editor</a>
+                </div>
+                <div class="software-card">
+                    <h4>💬 WhatsApp Web</h4>
+                    <p>Chat, Project Sharing & Communication.</p>
+                    <a href="https://web.whatsapp.com" target="_blank" class="software-btn">Open WhatsApp</a>
+                </div>
+                <div class="software-card">
+                    <h4>📁 Google Drive</h4>
+                    <p>Cloud Storage & File Backups.</p>
+                    <a href="https://drive.google.com" target="_blank" class="software-btn">Open Drive</a>
+                </div>
             </div>
-            <div class="software-card">
-                <h4>📍 Institute Location</h4>
-                <p>Find us on Google Maps Navigation.</p>
-                <a href="https://maps.google.com" target="_blank" class="software-btn">Open Maps</a>
+
+            <h2 class="section-title">🔗 Important Resources & Links</h2>
+            <div class="software-grid">
+                <div class="software-card">
+                    <h4>💼 Sarkari Result</h4>
+                    <p>Latest Govt Jobs, Admit Cards & Results.</p>
+                    <a href="https://www.sarkariresult.com" target="_blank" class="software-btn">Visit Website</a>
+                </div>
+                <div class="software-card">
+                    <h4>📍 Institute Location</h4>
+                    <p>Find us on Google Maps Navigation.</p>
+                    <a href="https://maps.google.com" target="_blank" class="software-btn">Open Maps</a>
+                </div>
             </div>
         </div>
+
     </div>
 
 </div>
 
 <!-- जावास्क्रिप्ट लॉजिक -->
 <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide-item');
+
+    function showNextSlide() {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+    }
+
+    setInterval(showNextSlide, 3000);
+
     function toggleLogin() {
         document.getElementById('loginModal').style.display = 'block';
     }
@@ -323,21 +632,17 @@
         }
     }
 
-    // होम पेज बिना लॉगिन के दिखेगा
     function showHome() {
-        document.getElementById("mainContent").style.display = "block";
+        document.getElementById("homeSection").style.display = "block";
         document.getElementById("mainIndexSection").style.display = "none";
         document.getElementById("coursesSection").style.display = "none";
-        window.scrollTo(0, 0);
     }
 
-    // बाकी सेक्शन्स के लिए लॉगिन जरूरी रहेगा
     function showMainIndex() {
         if (sessionStorage.getItem("isLoggedIn") === "true") {
-            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("homeSection").style.display = "none";
             document.getElementById("mainIndexSection").style.display = "block";
             document.getElementById("coursesSection").style.display = "none";
-            window.scrollTo(0, 0);
         } else {
             alert("Access Denied! Pehle Login karein.");
             toggleLogin();
@@ -346,10 +651,9 @@
 
     function showComputerCourses() {
         if (sessionStorage.getItem("isLoggedIn") === "true") {
-            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("homeSection").style.display = "none";
             document.getElementById("mainIndexSection").style.display = "none";
             document.getElementById("coursesSection").style.display = "block";
-            window.scrollTo(0, 0);
         } else {
             alert("Access Denied! Pehle Login karein.");
             toggleLogin();
