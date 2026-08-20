@@ -29,7 +29,7 @@
             padding-bottom: 0px;
         }
 
-        /* मार्की स्टाइल */
+        /* मार्की (चलने वाली पट्टी) स्टाइल */
         .marquee-banner {
             background-color: #008000;
             color: #ffffff;
@@ -136,6 +136,7 @@
         /* ----- ऑटो 4-वे बैनर स्लाइडर CSS ----- */
         .banner-container {
             flex: 1;
+            width: 100%;
             height: 450px;
             position: relative;
             overflow: hidden;
@@ -154,6 +155,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 1s ease-in-out;
+            z-index: 1;
         }
 
         .slide-item img {
@@ -166,9 +168,11 @@
         .slide-item.active {
             opacity: 1;
             visibility: visible;
+            z-index: 2;
             transform: translate(0, 0) !important;
         }
 
+        /* 4-दिशाओं की एनिमेटेड पोजीशन */
         .from-top { transform: translateY(-100%); }
         .from-bottom { transform: translateY(100%); }
         .from-left { transform: translateX(-100%); }
@@ -201,11 +205,13 @@
             text-shadow: 1px 1px 2px #000;
         }
 
+        /* कंटेनर और सेक्शन्स */
         .container { padding-left: 15px; color: white; text-shadow: 2px 2px 4px #000; padding-right: 15px; padding-bottom: 30px; }
         
         #homeSection { display: block; }
         #mainIndexSection, #coursesSection { display: none; } 
 
+        /* लॉगिन मॉडल */
         #loginModal { 
             display: none; position: fixed; top: 50%; left: 50%; 
             transform: translate(-50%, -50%); background: rgba(0,0,0,0.85); 
@@ -214,6 +220,7 @@
         }
         #loginModal input { padding: 8px; margin: 5px; border-radius: 5px; border: none; }
         
+        /* 2-2 की ग्रिड */
         .home-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -256,7 +263,7 @@
         .software-btn { background: #ffcc00; color: black; border: none; padding: 8px 15px; font-weight: bold; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; }
         .software-btn:hover { background: white; }
 
-        /* ----- रिस्पॉन्सिव मीडिया क्वेरी ----- */
+        /* ===== मोबाइल एवं टैबलेट स्क्रीन फ़िक्स (Mobile Responsive Fixes) ===== */
         @media (max-width: 1024px) {
             .banner-wrapper-grid { flex-direction: column; }
             .side-trainer-card { width: 100%; max-width: 900px; height: auto; flex-direction: row; gap: 15px; text-align: left; }
@@ -266,19 +273,51 @@
         }
 
         @media (max-width: 768px) {
-            .fixed-header { position: relative !important; }
-            .main-wrapper { padding-top: 10px !important; }
-            .home-grid { grid-template-columns: 1fr; }
+            .fixed-header { 
+                position: relative !important; 
+            }
+            .logo-container {
+                position: relative !important;
+                top: 0 !important;
+                left: 0 !important;
+                text-align: center;
+                margin: 5px 0;
+            }
+            .logo-container img {
+                margin: 0 auto;
+                height: 55px;
+                width: 55px;
+            }
+            .main-wrapper { 
+                padding-top: 10px !important; 
+            }
+            .home-grid { 
+                grid-template-columns: 1fr; 
+            }
             
+            /* बैनर लेआउट मोबाइल पर एक के नीचे एक दिखाएगा */
             .banner-wrapper-grid { 
+                display: flex !important;
                 flex-direction: column !important; 
                 width: 100% !important; 
                 gap: 15px !important; 
             }
+
+            /* बैनर स्लाइडर का फिक्स्ड साइज जिससे मोबाइल पर फोटो 100% चलती दिखेगी */
             .banner-container { 
+                display: block !important;
                 width: 100% !important; 
+                min-height: 250px !important; 
                 height: 250px !important; 
+                flex-shrink: 0 !important;
             }
+
+            .slide-item img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+            }
+
             .side-trainer-card { 
                 width: 100% !important; 
                 height: auto !important; 
@@ -298,13 +337,12 @@
             .header-text p { font-size: 11px; }
             nav { text-align: center; padding-top: 5px; }
             nav a { margin: 0 4px; font-size: 11px; display: inline-block; }
-            .logo-container { position: relative; top: 0; left: 0; text-align: center; margin-top: 5px; }
-            .logo-container img { height: 50px; width: 50px; margin: 0 auto; }
         }
     </style>
 </head>
 <body>
 
+<!-- हेडर -->
 <div class="fixed-header">
     <div class="marquee-banner">
         <marquee scrollamount="6">Welcome to Indian Technical Institute, Padrauna Railway Station, Near Pragya Radio -:- Mobile No. 6393261758 , 9076824492 | Admisson For New Batch - फायर सेफ्टी, स्पोकन इंग्लिश एवं एडवांस कंप्यूटर कोर्सेज</marquee>
@@ -328,9 +366,12 @@
     </div>
 </div>
 
+<!-- मेन कंटेंट -->
 <div class="main-wrapper">
 
+    <!-- बैनर व साइड कार्ड्स -->
     <div class="banner-wrapper-grid">
+        <!-- बायां कार्ड -->
         <div class="side-trainer-card">
             <img src="head 1.jpeg" alt="Fire Safety Trainer">
             <div>
@@ -342,6 +383,7 @@
             <div class="trainer-contact">📞 Call: 9076824492</div>
         </div>
 
+        <!-- मोबाइल और PC दोनों पर ऑटो चलने वाला बैनर स्लाइडर -->
         <div class="banner-container">
             <div class="slide-item from-left active">
                 <img src="photo 1.jpeg" alt="Banner Photo 1">
@@ -375,6 +417,7 @@
             </div>
         </div>
 
+        <!-- दायां कार्ड -->
         <div class="side-trainer-card">
             <img src="head 2.jpeg" alt="Spoken English Trainer">
             <div>
@@ -387,6 +430,7 @@
         </div>
     </div>
 
+    <!-- अबाउट लेख -->
     <div class="banner-about-section">
         <h2>🌟 इंडियन टेक्निकल इंस्टीट्यूट में आपका स्वागत है 🌟</h2>
         <p>
@@ -397,6 +441,7 @@
         </p>
     </div>
 
+    <!-- लॉगिन पॉप-अप -->
     <div id="loginModal">
         <h3>Login</h3>
         <input type="text" id="user" placeholder="Username"><br>
@@ -405,6 +450,7 @@
         <button onclick="document.getElementById('loginModal').style.display='none'">Cancel</button>
     </div>
 
+    <!-- सेक्शन्स -->
     <div class="container">
         
         <div id="homeSection">
@@ -452,7 +498,7 @@
                 <div class="info-section">
                     <div>
                         <div class="img-box">
-                            <img src="photo 5.jpeg" alt="Indian Technical Institute Building" class="section-img">
+                            <img src="photo 5.jpeg" alt="Institute Infrastructure" class="section-img">
                         </div>
                         <h3>🏛️ संस्थान का परिसर (Institute Infrastructure)</h3>
                         <p>इंडियन टेक्निकल इंस्टीट्यूट का परिसर अत्यंत विशाल, सुरक्षित और आधुनिक सुविधाओं से लैस है।</p>
@@ -566,7 +612,7 @@
                 <div class="software-card">
                     <h4>💬 WhatsApp Web</h4>
                     <p>Chat, Project Sharing & Communication.</p>
-                    <a href="https://web.whatsapp.com" target="_blank" class="software-btn">Open WhatsApp</a>
+                    <a href="https://web.whatsapp.com" target="_btn" class="software-btn">Open WhatsApp</a>
                 </div>
                 <div class="software-card">
                     <h4>📁 Google Drive</h4>
@@ -594,16 +640,19 @@
 
 </div>
 
+<!-- जावास्क्रिप्ट -->
 <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide-item');
 
     function showNextSlide() {
+        if (slides.length === 0) return;
         slides[currentSlide].classList.remove('active');
         currentSlide = (currentSlide + 1) % slides.length;
         slides[currentSlide].classList.add('active');
     }
 
+    /* 3 सेकंड में अपने आप फोटो बदलेगी */
     setInterval(showNextSlide, 3000);
 
     function toggleLogin() {
