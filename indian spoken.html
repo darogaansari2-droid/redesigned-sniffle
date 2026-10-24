@@ -21,6 +21,7 @@
       --gold-gradient: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
       --body-subtext-size: 13.5px;
       --seal-scale: 1;
+      --cert-scale: 1;
     }
 
     * {
@@ -136,7 +137,7 @@
       overflow: auto;
     }
 
-    /* Certificate Outer Frame */
+    /* Certificate Outer Frame with Dynamic Scaling */
     .certificate-container {
       background: #fff;
       position: relative;
@@ -144,6 +145,8 @@
       box-sizing: border-box;
       transition: all 0.3s ease;
       background-image: radial-gradient(#f8fafc 60%, #f1f5f9 100%);
+      transform: scale(var(--cert-scale));
+      transform-origin: center center;
     }
 
     /* Orientation Modes */
@@ -278,32 +281,74 @@
     .ribbon-wrapper {
       position: relative;
       text-align: center;
-      margin: 10px 0 5px 0;
+      margin: 12px 0 6px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .ribbon-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 6px 10px rgba(11, 37, 69, 0.35));
     }
 
     .ribbon {
-      display: inline-block;
-      background: linear-gradient(180deg, #134074 0%, #0b2545 100%);
+      position: relative;
+      background: linear-gradient(180deg, #184b85 0%, #0b2545 60%, #06162b 100%);
       color: #fff;
       font-family: 'Cinzel', serif;
-      font-size: 24px;
-      font-weight: 800;
-      padding: 6px 45px;
-      letter-spacing: 3px;
+      font-size: 25px;
+      font-weight: 900;
+      padding: 8px 55px;
+      letter-spacing: 4px;
       border-top: 2px solid #d4af37;
       border-bottom: 2px solid #d4af37;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-      position: relative;
+      border-radius: 60px / 12px;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+      z-index: 2;
+    }
+
+    .ribbon::before {
+      content: "";
+      position: absolute;
+      left: -28px;
+      top: -2px;
+      bottom: -2px;
+      width: 32px;
+      background: linear-gradient(135deg, #134074 0%, #0b2545 100%);
+      clip-path: polygon(100% 0, 0 0, 45% 50%, 0 100%, 100% 100%);
+      border-top: 2px solid #d4af37;
+      border-bottom: 2px solid #d4af37;
+      z-index: 1;
+    }
+
+    .ribbon::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      top: -2px;
+      bottom: -2px;
+      width: 32px;
+      background: linear-gradient(225deg, #134074 0%, #0b2545 100%);
+      clip-path: polygon(0 0, 100% 0, 55% 50%, 100% 100%, 0 100%);
+      border-top: 2px solid #d4af37;
+      border-bottom: 2px solid #d4af37;
+      z-index: 1;
     }
 
     .ribbon-sub {
       font-family: 'Cinzel', serif;
-      font-size: 11px;
-      letter-spacing: 4px;
+      font-size: 11.5px;
+      letter-spacing: 5px;
       color: #0b2545;
-      font-weight: 800;
-      margin-top: 4px;
+      font-weight: 900;
+      margin-top: 6px;
       text-transform: uppercase;
+      text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.1);
     }
 
     /* Main Certificate Content */
@@ -331,7 +376,6 @@
       font-style: italic;
     }
 
-    /* Custom Subtext Size Class */
     .dynamic-subtext {
       font-size: var(--body-subtext-size);
       color: #1e293b;
@@ -395,7 +439,6 @@
       line-height: 1.1;
     }
 
-    /* Info Details Block */
     .info-details {
       margin-top: 6px;
       font-size: 11px;
@@ -453,6 +496,7 @@
       align-items: flex-end;
       justify-content: center;
       margin-bottom: 2px;
+      background: transparent;
     }
 
     .sig-image-box img {
@@ -490,28 +534,40 @@
       border-top: 1px solid #d4af37;
     }
 
-    /* Print Styles */
+    /* Strict Single Page Print Settings */
     @media print {
-      @page {
-        margin: 0;
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: none !important;
+        overflow: hidden !important;
       }
-      body {
-        background: none;
-        padding: 0;
-        height: auto;
-        overflow: visible;
-      }
+      
       .sidebar {
         display: none !important;
       }
+
       .preview-area {
-        padding: 0;
-        background: none;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: none !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
+
       .certificate-container {
-        box-shadow: none;
-        page-break-after: always;
-        page-break-inside: avoid;
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        transform: scale(var(--cert-scale)) !important;
+        transform-origin: center center !important;
+        page-break-inside: avoid !important;
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
       }
       
       .certificate-container.landscape {
@@ -539,6 +595,15 @@
         <option value="landscape" selected>A4 Landscape (चौड़ा)</option>
         <option value="portrait">A4 Portrait (लंबा)</option>
       </select>
+    </div>
+
+    <!-- Certificate Scale / Fit Page Slider -->
+    <div class="form-group">
+      <label>📐 प्रिंट साइज स्केल (Fit Page):</label>
+      <div class="slider-container">
+        <input type="range" id="certScaleSlider" min="0.7" max="1.1" step="0.02" value="1" oninput="updateCertScale(this.value)">
+        <span class="slider-val" id="certScaleVal">100%</span>
+      </div>
     </div>
 
     <!-- Subtext Font Size Slider -->
@@ -610,13 +675,8 @@
     </div>
 
     <div class="form-group">
-      <label>🏫 संस्थान लोगो (Logo) अपलोड करें:</label>
-      <input type="file" accept="image/*" onchange="uploadImage(event, 'logoImg')">
-    </div>
-
-    <div class="form-group">
-      <label>✍️ हस्ताक्षर अपलोड करें:</label>
-      <input type="file" accept="image/*" onchange="uploadImage(event, 'sigImg')">
+      <label>✍️ हस्ताक्षर फोटो अपलोड करें:</label>
+      <input type="file" accept="image/*" onchange="uploadSignature(event)">
     </div>
 
     <button class="btn-print" onclick="window.print()">🖨️ A4 प्रिंट / PDF सेव करें</button>
@@ -637,16 +697,7 @@
           <!-- Header -->
           <div class="cert-header">
             <div class="logo-box">
-              <svg id="logoImg" width="90" height="90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#0b2545" stroke-width="4"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#d4af37" stroke-width="2"/>
-                <path id="textPath" d="M 15,50 A 35,35 0 1,1 85,50" fill="none"/>
-                <text font-size="8" font-weight="bold" fill="#0b2545">
-                  <textPath href="#textPath" startOffset="50%" text-anchor="middle">INDIAN SPOKEN INSTITUTE</textPath>
-                </text>
-                <circle cx="50" cy="50" r="22" fill="#0b2545"/>
-                <text x="50" y="54" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">ISI</text>
-              </svg>
+              <img id="logoImg" src="https://i.imgur.com/qud4PXd.png" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Logo">
             </div>
 
             <div class="header-center">
@@ -664,7 +715,9 @@
 
           <!-- Title Ribbon -->
           <div class="ribbon-wrapper">
-            <div class="ribbon">CERTIFICATE</div>
+            <div class="ribbon-container">
+              <div class="ribbon">CERTIFICATE</div>
+            </div>
             <div class="ribbon-sub">OF COMPLETION</div>
           </div>
 
@@ -681,6 +734,11 @@
             </div>
 
             <div class="wishes-text">We wish you all the best for a bright future.</div>
+
+            <!-- Course Duration centered above gold seal -->
+            <div style="margin-top: 6px; font-size: 13px; font-weight: 700; color: #0b2545;">
+              Course Duration : <span style="border-bottom: 1.5px solid #0b2545; padding-bottom: 1px; min-width: 70px; display: inline-block; text-align: center;" id="dispDuration">3 Months</span>
+            </div>
           </div>
 
           <!-- Footer Area -->
@@ -696,9 +754,6 @@
                 <div class="info-line">
                   Date : <span class="underline" id="dispDate">10/07/2026</span>
                   &nbsp; Sr No. - <span class="underline" id="dispSr">6</span>
-                </div>
-                <div class="info-line">
-                  Course Duration : <span class="underline" id="dispDuration">3 Months</span>
                 </div>
               </div>
             </div>
@@ -813,6 +868,12 @@
       document.head.appendChild(styleTag);
     }
 
+    // Update Certificate Scale / Fit Page
+    function updateCertScale(val) {
+      document.documentElement.style.setProperty('--cert-scale', val);
+      document.getElementById('certScaleVal').innerText = Math.round(val * 100) + '%';
+    }
+
     // Update Text Size below Student Name
     function updateTextSize(val) {
       document.documentElement.style.setProperty('--body-subtext-size', val + 'px');
@@ -825,7 +886,7 @@
       document.getElementById('sealSizeVal').innerText = Math.round(val * 100) + '%';
     }
 
-    // Dynamic Image Uploader
+    // Dynamic Image Uploader for Photo
     function uploadImage(event, targetId) {
       const file = event.target.files[0];
       if (file) {
@@ -835,7 +896,6 @@
           if (target.tagName.toLowerCase() === 'img') {
             target.src = e.target.result;
           } else {
-            // If replacing default SVG with an uploaded <img> tag
             const newImg = document.createElement('img');
             newImg.id = targetId;
             newImg.src = e.target.result;
@@ -847,6 +907,59 @@
         }
         reader.readAsDataURL(file);
       }
+    }
+
+    // Automatic Signature Background Removal (Transparent Processing)
+    function uploadSignature(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          ctx.drawImage(img, 0, 0);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imgData.data;
+
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const brightness = (r + g + b) / 3;
+
+            if (brightness > 140) {
+              data[i + 3] = 0; // Transparent
+            } else {
+              data[i] = 11;     // Dark Blue Ink
+              data[i + 1] = 37; 
+              data[i + 2] = 69; 
+              data[i + 3] = 255;
+            }
+          }
+
+          ctx.putImageData(imgData, 0, 0);
+
+          const transparentDataUrl = canvas.toDataURL('image/png');
+          const target = document.getElementById('sigImg');
+
+          const newImg = document.createElement('img');
+          newImg.id = 'sigImg';
+          newImg.src = transparentDataUrl;
+          newImg.style.maxWidth = '100%';
+          newImg.style.maxHeight = '100%';
+          newImg.style.objectFit = 'contain';
+
+          target.parentNode.replaceChild(newImg, target);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     // Initial setups on load
