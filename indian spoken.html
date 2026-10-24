@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>सर्टिफिकेट जनरेटर - Indian Spoken Institute</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  <!-- QRCode.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <style>
+    :root {
+      --primary-blue: #0b2545;
+      --secondary-blue: #134074;
+      --gold-dark: #b8860b;
+      --gold-light: #f3e5ab;
+      --gold-mid: #d4af37;
+      --gold-gradient: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+      --body-subtext-size: 13.5px;
+      --seal-scale: 1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #1e293b;
+      color: #333;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Left Control Sidebar */
+    .sidebar {
+      width: 380px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 2px solid #334155;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sidebar h2 {
+      font-size: 1.25rem;
+      color: #f59e0b;
+      border-bottom: 2px solid #334155;
+      padding-bottom: 8px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input, .form-group select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .form-group input[type="range"] {
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-val {
+      font-size: 0.85rem;
+      color: #f59e0b;
+      font-weight: bold;
+      min-width: 45px;
+    }
+
+    .btn-print {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+    }
+
+    .btn-print:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      transform: translateY(-1px);
+    }
+
+    /* Main Certificate Canvas View */
+    .preview-area {
+      flex: 1;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    /* Certificate Outer Frame */
+    .certificate-container {
+      background: #fff;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+      background-image: radial-gradient(#f8fafc 60%, #f1f5f9 100%);
+    }
+
+    /* Orientation Modes */
+    .certificate-container.landscape {
+      width: 297mm;
+      height: 210mm;
+      padding: 12mm;
+    }
+
+    .certificate-container.portrait {
+      width: 210mm;
+      height: 297mm;
+      padding: 12mm;
+    }
+
+    /* Border Framing Styling */
+    .cert-border {
+      width: 100%;
+      height: 100%;
+      border: 4px solid #0b2545;
+      padding: 6px;
+      position: relative;
+      background: #fff;
+      box-sizing: border-box;
+    }
+
+    .cert-inner-border {
+      width: 100%;
+      height: 100%;
+      border: 2px solid #d4af37;
+      position: relative;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+    }
+
+    /* Corner Ornaments */
+    .corner {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-color: #d4af37;
+      border-style: solid;
+      z-index: 2;
+    }
+    .corner-tl { top: 4px; left: 4px; border-width: 3px 0 0 3px; }
+    .corner-tr { top: 4px; right: 4px; border-width: 3px 3px 0 0; }
+    .corner-bl { bottom: 4px; left: 4px; border-width: 0 0 3px 3px; }
+    .corner-br { bottom: 4px; right: 4px; border-width: 0 3px 3px 0; }
+
+    /* Header Layout */
+    .cert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+
+    .logo-box {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .header-center {
+      text-align: center;
+      flex: 1;
+      padding: 0 10px;
+    }
+
+    .inst-title {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: #0b2545;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+    }
+
+    .inst-tagline {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: #475569;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .inst-location {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0b2545;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .photo-box {
+      width: 90px;
+      height: 110px;
+      border: 3px solid #d4af37;
+      padding: 2px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Ribbon Title Banner */
+    .ribbon-wrapper {
+      position: relative;
+      text-align: center;
+      margin: 10px 0 5px 0;
+    }
+
+    .ribbon {
+      display: inline-block;
+      background: linear-gradient(180deg, #134074 0%, #0b2545 100%);
+      color: #fff;
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 800;
+      padding: 6px 45px;
+      letter-spacing: 3px;
+      border-top: 2px solid #d4af37;
+      border-bottom: 2px solid #d4af37;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      position: relative;
+    }
+
+    .ribbon-sub {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #0b2545;
+      font-weight: 800;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    /* Main Certificate Content */
+    .cert-body {
+      text-align: center;
+      margin: 5px 0;
+    }
+
+    .certify-lead {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .student-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: #0b2545;
+      margin: 4px 0;
+      border-bottom: 2px solid #d4af37;
+      display: inline-block;
+      padding: 0 25px 2px 25px;
+      font-style: italic;
+    }
+
+    /* Custom Subtext Size Class */
+    .dynamic-subtext {
+      font-size: var(--body-subtext-size);
+      color: #1e293b;
+      line-height: 1.5;
+      font-weight: 500;
+      max-width: 85%;
+      margin: 0 auto;
+    }
+
+    .dynamic-subtext strong {
+      color: #0b2545;
+      font-weight: 700;
+    }
+
+    .wishes-text {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: calc(var(--body-subtext-size) + 1px);
+      color: #0b2545;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    /* Footer Section Layout */
+    .cert-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+      margin-top: 5px;
+      position: relative;
+    }
+
+    /* Scanner Column */
+    .qr-column {
+      width: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    #qrcode {
+      background: #fff;
+      padding: 4px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+    }
+
+    #qrcode img {
+      display: block;
+    }
+
+    .scan-note {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0b2545;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      line-height: 1.1;
+    }
+
+    /* Info Details Block */
+    .info-details {
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0b2545;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .info-line {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .info-line span.underline {
+      border-bottom: 1.5px solid #0b2545;
+      padding-bottom: 1px;
+      min-width: 70px;
+      display: inline-block;
+      text-align: center;
+    }
+
+    /* Center Gold Seal */
+    .seal-column {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .gold-seal {
+      width: 85px;
+      height: 85px;
+      transform: scale(var(--seal-scale));
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Signature Column */
+    .sig-column {
+      width: 200px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sig-image-box {
+      height: 45px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 2px;
+    }
+
+    .sig-image-box img {
+      max-height: 100%;
+      max-width: 160px;
+      object-fit: contain;
+    }
+
+    .sig-line {
+      width: 100%;
+      border-top: 1.5px solid #0b2545;
+      padding-top: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0b2545;
+    }
+
+    .sig-title {
+      font-size: 10px;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    /* Outer Bottom Ribbon Line */
+    .bottom-bar {
+      width: 100%;
+      background: #0b2545;
+      color: #fff;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 0;
+      letter-spacing: 1px;
+      margin-top: 6px;
+      border-top: 1px solid #d4af37;
+    }
+
+    /* Print Styles */
+    @media print {
+      @page {
+        margin: 0;
+      }
+      body {
+        background: none;
+        padding: 0;
+        height: auto;
+        overflow: visible;
+      }
+      .sidebar {
+        display: none !important;
+      }
+      .preview-area {
+        padding: 0;
+        background: none;
+      }
+      .certificate-container {
+        box-shadow: none;
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
+      
+      .certificate-container.landscape {
+        width: 297mm !important;
+        height: 210mm !important;
+      }
+
+      .certificate-container.portrait {
+        width: 210mm !important;
+        height: 297mm !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Controls Panel -->
+  <div class="sidebar">
+    <h2>⚙️ सर्टिफिकेट सेटिंग्स</h2>
+
+    <!-- Page Orientation Switch -->
+    <div class="form-group">
+      <label for="pageOrientation">📄 लेआउट स्टाइल (Orientation):</label>
+      <select id="pageOrientation" onchange="updateOrientation()">
+        <option value="landscape" selected>A4 Landscape (चौड़ा)</option>
+        <option value="portrait">A4 Portrait (लंबा)</option>
+      </select>
+    </div>
+
+    <!-- Subtext Font Size Slider -->
+    <div class="form-group">
+      <label>🔤 पाठ (Subtext) साइज:</label>
+      <div class="slider-container">
+        <input type="range" id="textSizeSlider" min="10" max="20" step="0.5" value="13.5" oninput="updateTextSize(this.value)">
+        <span class="slider-val" id="textSizeVal">13.5 px</span>
+      </div>
+    </div>
+
+    <!-- Gold Seal Size Slider -->
+    <div class="form-group">
+      <label>🏅 गोल्डन सील साइज:</label>
+      <div class="slider-container">
+        <input type="range" id="sealSizeSlider" min="0.6" max="1.6" step="0.05" value="1" oninput="updateSealSize(this.value)">
+        <span class="slider-val" id="sealSizeVal">100%</span>
+      </div>
+    </div>
+
+    <hr style="border: 0.5px solid #334155;">
+
+    <div class="form-group">
+      <label for="inputName">विद्यार्थी का नाम:</label>
+      <input type="text" id="inputName" value="Jamshed Ansari" oninput="updateText()">
+    </div>
+
+    <div class="form-group">
+      <label for="inputCourse">कोर्स का नाम:</label>
+      <input type="text" id="inputCourse" value="Spoken English Course" oninput="updateText()">
+    </div>
+
+    <div class="form-group">
+      <label for="inputInst">संस्थान का नाम:</label>
+      <input type="text" id="inputInst" value="Indian Spoken Institute" oninput="updateText()">
+    </div>
+
+    <div class="form-group">
+      <label for="inputLoc">स्थान / पता:</label>
+      <input type="text" id="inputLoc" value="Padrauna Railway Station" oninput="updateText()">
+    </div>
+
+    <div class="form-group">
+      <label for="inputDate">दिनांक (Date):</label>
+      <input type="text" id="inputDate" value="10/07/2026" oninput="updateText()">
+    </div>
+
+    <div class="form-group">
+      <label for="inputSr">क्रमांक (Sr No.):</label>
+      <input type="text" id="inputSr" value="6" oninput="updateText()">
+    </div>
+
+    <div class="form-group">
+      <label for="inputDuration">अवधि (Duration):</label>
+      <input type="text" id="inputDuration" value="3 Months" oninput="updateText()">
+    </div>
+
+    <div class="form-group">
+      <label for="inputQR">स्कैनर QR डेटा (URL/Text):</label>
+      <input type="text" id="inputQR" value="https://shorturl.at/RtLAx" oninput="generateQR()">
+    </div>
+
+    <hr style="border: 0.5px solid #334155;">
+
+    <!-- Image Upload Inputs -->
+    <div class="form-group">
+      <label>🖼️ विद्यार्थी फोटो अपलोड करें:</label>
+      <input type="file" accept="image/*" onchange="uploadImage(event, 'photoImg')">
+    </div>
+
+    <div class="form-group">
+      <label>🏫 संस्थान लोगो (Logo) अपलोड करें:</label>
+      <input type="file" accept="image/*" onchange="uploadImage(event, 'logoImg')">
+    </div>
+
+    <div class="form-group">
+      <label>✍️ हस्ताक्षर अपलोड करें:</label>
+      <input type="file" accept="image/*" onchange="uploadImage(event, 'sigImg')">
+    </div>
+
+    <button class="btn-print" onclick="window.print()">🖨️ A4 प्रिंट / PDF सेव करें</button>
+  </div>
+
+  <!-- Main Certificate Canvas View Area -->
+  <div class="preview-area">
+    <div class="certificate-container landscape" id="certContainer">
+      <div class="cert-border">
+        <div class="cert-inner-border">
+          
+          <!-- Corner Ornaments -->
+          <div class="corner corner-tl"></div>
+          <div class="corner corner-tr"></div>
+          <div class="corner corner-bl"></div>
+          <div class="corner corner-br"></div>
+
+          <!-- Header -->
+          <div class="cert-header">
+            <div class="logo-box">
+              <svg id="logoImg" width="90" height="90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#0b2545" stroke-width="4"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#d4af37" stroke-width="2"/>
+                <path id="textPath" d="M 15,50 A 35,35 0 1,1 85,50" fill="none"/>
+                <text font-size="8" font-weight="bold" fill="#0b2545">
+                  <textPath href="#textPath" startOffset="50%" text-anchor="middle">INDIAN SPOKEN INSTITUTE</textPath>
+                </text>
+                <circle cx="50" cy="50" r="22" fill="#0b2545"/>
+                <text x="50" y="54" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">ISI</text>
+              </svg>
+            </div>
+
+            <div class="header-center">
+              <div class="inst-title" id="dispInst">INDIAN SPOKEN INSTITUTE</div>
+              <div class="inst-tagline">Better English • Brighter Future</div>
+              <div class="inst-location">
+                📍 <span id="dispLoc">Padrauna Railway Station</span>
+              </div>
+            </div>
+
+            <div class="photo-box">
+              <img id="photoImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='120' viewBox='0 0 100 120'><rect width='100%' height='100%' fill='%23e2e8f0'/><circle cx='50' cy='45' r='25' fill='%2394a3b8'/><path d='M10 110 C20 80, 80 80, 90 110 Z' fill='%2394a3b8'/></svg>" alt="Student Photo">
+            </div>
+          </div>
+
+          <!-- Title Ribbon -->
+          <div class="ribbon-wrapper">
+            <div class="ribbon">CERTIFICATE</div>
+            <div class="ribbon-sub">OF COMPLETION</div>
+          </div>
+
+          <!-- Certificate Body -->
+          <div class="cert-body">
+            <div class="certify-lead">This is to certify that</div>
+            <div class="student-name" id="dispName">Jamshed Ansari</div>
+
+            <div class="dynamic-subtext">
+              has successfully completed the <strong id="dispCourse">Spoken English Course</strong><br>
+              at <strong id="dispInstBody">Indian Spoken Institute</strong>.<br>
+              The candidate has shown dedication, regular attendance and satisfactory performance<br>
+              in all aspects of the course.
+            </div>
+
+            <div class="wishes-text">We wish you all the best for a bright future.</div>
+          </div>
+
+          <!-- Footer Area -->
+          <div class="cert-footer">
+            
+            <!-- Scanner Column -->
+            <div class="qr-column">
+              <div id="qrcode"></div>
+              <div class="scan-note">
+                📱 Scan to verify<br>this certificate
+              </div>
+              <div class="info-details">
+                <div class="info-line">
+                  Date : <span class="underline" id="dispDate">10/07/2026</span>
+                  &nbsp; Sr No. - <span class="underline" id="dispSr">6</span>
+                </div>
+                <div class="info-line">
+                  Course Duration : <span class="underline" id="dispDuration">3 Months</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Golden Seal Column -->
+            <div class="seal-column">
+              <div class="gold-seal">
+                <svg width="85" height="85" viewBox="0 0 100 100">
+                  <defs>
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#bf953f"/>
+                      <stop offset="25%" stop-color="#fcf6ba"/>
+                      <stop offset="50%" stop-color="#b38728"/>
+                      <stop offset="75%" stop-color="#fbf5b7"/>
+                      <stop offset="100%" stop-color="#aa771c"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Starburst backing -->
+                  <path d="M50 0 L55 10 L65 3 L67 14 L78 10 L77 21 L88 20 L84 30 L95 33 L89 42 L99 48 L91 55 L98 63 L88 68 L92 78 L81 80 L82 91 L71 90 L68 100 L58 96 L53 104 L47 104 L42 96 L32 100 L29 90 L18 91 L19 80 L8 78 L12 68 L2 63 L9 55 L1 48 L11 42 L5 33 L16 30 L12 20 L23 21 L22 10 L33 14 L35 3 L45 10 Z" fill="url(#goldGrad)"/>
+                  <circle cx="50" cy="50" r="36" fill="url(#goldGrad)" stroke="#785208" stroke-width="1.5"/>
+                  <circle cx="50" cy="50" r="30" fill="none" stroke="#785208" stroke-width="1" stroke-dasharray="2,2"/>
+                  <text x="50" y="42" font-size="6" font-weight="bold" fill="#3d2703" text-anchor="middle">Certified By</text>
+                  <text x="50" y="50" font-size="7" font-weight="900" fill="#3d2703" text-anchor="middle">INDIAN</text>
+                  <text x="50" y="57" font-size="6" font-weight="bold" fill="#3d2703" text-anchor="middle">SPOKEN</text>
+                  <text x="50" y="64" font-size="5" font-weight="bold" fill="#3d2703" text-anchor="middle">INSTITUTE</text>
+                  <!-- Stars -->
+                  <text x="50" y="34" font-size="6" fill="#3d2703" text-anchor="middle">★★★</text>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Authorised Signature Column -->
+            <div class="sig-column">
+              <div class="sig-image-box">
+                <svg id="sigImg" width="140" height="40" viewBox="0 0 140 40">
+                  <path d="M 10 30 Q 30 5, 50 25 T 90 15 T 130 25" fill="none" stroke="#0b2545" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="sig-line">Authorised Signatory</div>
+              <div class="sig-title" id="dispInstSig">Indian Spoken Institute</div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Decorative Strip -->
+          <div class="bottom-bar">
+            ❖ <span id="dispInstBar">Indian Spoken Institute</span> ❖
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let qrCodeObj = null;
+
+    // Initialize QR Code
+    function generateQR() {
+      const qrText = document.getElementById('inputQR').value;
+      const qrContainer = document.getElementById('qrcode');
+      qrContainer.innerHTML = '';
+      
+      qrCodeObj = new QRCode(qrContainer, {
+        text: qrText,
+        width: 75,
+        height: 75,
+        colorDark : "#0b2545",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+    }
+
+    // Live Text Syncing
+    function updateText() {
+      const name = document.getElementById('inputName').value;
+      const course = document.getElementById('inputCourse').value;
+      const inst = document.getElementById('inputInst').value;
+      const loc = document.getElementById('inputLoc').value;
+      const date = document.getElementById('inputDate').value;
+      const sr = document.getElementById('inputSr').value;
+      const duration = document.getElementById('inputDuration').value;
+
+      document.getElementById('dispName').innerText = name;
+      document.getElementById('dispCourse').innerText = course;
+      document.getElementById('dispInst').innerText = inst;
+      document.getElementById('dispInstBody').innerText = inst;
+      document.getElementById('dispInstSig').innerText = inst;
+      document.getElementById('dispInstBar').innerText = inst;
+      document.getElementById('dispLoc').innerText = loc;
+      document.getElementById('dispDate').innerText = date;
+      document.getElementById('dispSr').innerText = sr;
+      document.getElementById('dispDuration').innerText = duration;
+    }
+
+    // Orientation Adjustment (Landscape / Portrait)
+    function updateOrientation() {
+      const val = document.getElementById('pageOrientation').value;
+      const cert = document.getElementById('certContainer');
+      const styleTag = document.getElementById('dynamicPageStyle') || document.createElement('style');
+      styleTag.id = 'dynamicPageStyle';
+
+      if (val === 'portrait') {
+        cert.classList.remove('landscape');
+        cert.classList.add('portrait');
+        styleTag.innerHTML = `@media print { @page { size: A4 portrait; margin: 0; } }`;
+      } else {
+        cert.classList.remove('portrait');
+        cert.classList.add('landscape');
+        styleTag.innerHTML = `@media print { @page { size: A4 landscape; margin: 0; } }`;
+      }
+      document.head.appendChild(styleTag);
+    }
+
+    // Update Text Size below Student Name
+    function updateTextSize(val) {
+      document.documentElement.style.setProperty('--body-subtext-size', val + 'px');
+      document.getElementById('textSizeVal').innerText = val + ' px';
+    }
+
+    // Update Golden Seal Size
+    function updateSealSize(val) {
+      document.documentElement.style.setProperty('--seal-scale', val);
+      document.getElementById('sealSizeVal').innerText = Math.round(val * 100) + '%';
+    }
+
+    // Dynamic Image Uploader
+    function uploadImage(event, targetId) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const target = document.getElementById(targetId);
+          if (target.tagName.toLowerCase() === 'img') {
+            target.src = e.target.result;
+          } else {
+            // If replacing default SVG with an uploaded <img> tag
+            const newImg = document.createElement('img');
+            newImg.id = targetId;
+            newImg.src = e.target.result;
+            newImg.style.maxWidth = '100%';
+            newImg.style.maxHeight = '100%';
+            newImg.style.objectFit = 'contain';
+            target.parentNode.replaceChild(newImg, target);
+          }
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Initial setups on load
+    window.onload = function() {
+      generateQR();
+      updateOrientation();
+    };
+  </script>
+</body>
+</html>
