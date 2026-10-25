@@ -534,6 +534,28 @@
       border-top: 1px solid #d4af37;
     }
 
+    /* Mobile Responsiveness Media Query */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        height: auto;
+        overflow: auto;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 50vh;
+        border-right: none;
+        border-bottom: 2px solid #334155;
+      }
+      .preview-area {
+        width: 100%;
+        height: auto;
+        min-height: 60vh;
+        padding: 10px;
+      }
+    }
+
     /* Strict Single Page Print Settings */
     @media print {
       html, body {
